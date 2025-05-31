@@ -1,0 +1,48 @@
+services:
+  fastapi_template:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image:
+      user/fastapi_template
+    container_name: fastapi_template
+    ports:
+      - "8000:8000"
+    networks:
+      - main_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: postgresql_admin
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@email.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - postgres_admin_volume:/var/lib/pgadmin
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - main_network
+    restart: unless-stopped
+
+volumes:
+  postgres_admin_volume:
+  postgres_data:
+
+networks:
+  main_network:
+    driver: bridge
