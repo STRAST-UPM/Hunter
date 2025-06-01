@@ -1,52 +1,51 @@
-# Template Python Project 
+# Hunter
 
-Template for a Fast API project. This template is based on the
-[python_project_template](https://github.com/STRAST-UPM/python_project_template)
-from STRAST research group that can be found in the same organization as this 
-one. The same structure of files and folder applies, check the original for more
-detailed information.
+Network tool specialized on anycast IP destination tracking. 
 
-## Project Structure
+## Deployment 
 
-This section describe the updates made to the base template to fit FastAPI
-properly.
-
-### Files and folders updates
-
-- `code/src/classes/routers` is the package used to keep the routers that
-control the different main endpoints.
-
-## Deployment on containers
-
-As it was told this project was though to be used with containers for easy
-deployment. The base containers deployed are the project developed and a
-PostgreSQL database with a web administration console accesible. The following
-URL is for the [FastAPI Docs](http://localhost) and the second one for the
-[Postgres admin console](http://localhost:8080). The database and administration
-console have permanent storage via Docker volumes.
+For building the image and push it to the remote repository you can use 
+`build_and_push.sh` script or the following commands.
 
 - Build project image
 ```shell
-sudo docker build -t user/fastapi_template:latest .
+sudo docker build -t strast-upm/hunter:latest .
 ```
 
 - Push image to repository
 ```shell
-sudo docker push user/fastapi_template:latest
+sudo docker tag strast-upm/hunter:latest ghcr.io/strast-upm/hunter:latest
+sudo docker push ghcr.io/strast-upm/hunter:latest
 ```
 
 - Run project just project container
 ```shell
 sudo docker run \
-  -p "8000:8000" \
-  --name fastapi_template \
-  -d user/fastapi_template:latest
+  -p "80:8000" \
+  --name hunter \
+  -d strast-upm/hunter:latest
 ```
 
 - Start deployment
 ```shell
 sudo docker compose up -d
 ```
+
+### Direcciones
+
+- [Hunter Swagger](http://localhost/docs)
+- [Postgres admin console](http://localhost:8080)
+
+## Related publications
+
+- Hugo Pascual, Jose M. del Alamo, David Rodriguez, Juan C. Dueñas,
+Hunter: Tracing anycast communications to uncover cross-border personal data transfers,
+Computers & Security, Volume 141, 2024, 103823, ISSN 0167-4048,
+https://doi.org/10.1016/j.cose.2024.103823.
+
+- H. Pascual, J. M. D. Alamo, D. Rodriguez and J. C. Duenas,
+"Anycast and Third-party Libraries: A Recipe for a Privacy Disaster?," in 
+IEEE Communications Magazine, https://doi.org/10.1109/MCOM.006.2400576.
 
 ---
 

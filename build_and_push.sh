@@ -1,15 +1,13 @@
 #!/bin/bash
 
-#TODO test with internet access
-
-script_path="$(realpath "${BASH_SOURCE[0]}")"
+full_path_to_script="$(realpath "${BASH_SOURCE[0]}")"
 script_parent_folder="$(dirname "$full_path_to_script")"
 
-image_name="template_app"
+image_name="strast-upm/hunter"
 tag="latest"
-dockerfile_path="$script_parent_folder/Dockerfile"
-sudo docker build -f "$dockerfile_path" -t "$image_name":"$tag" "$script_parent_folder" --no-cache
+
+sudo docker build --no-cache -t "$image_name":"$tag" "$script_parent_folder"
 
 image_repository="ghcr.io"
-docker login "$image_repository"
+sudo docker tag "$image_name" "$image_repository/$image_name:$tag"
 sudo docker push "$image_repository/$image_name:$tag"

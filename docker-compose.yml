@@ -1,13 +1,13 @@
 services:
-  fastapi_template:
+  hunter:
     build:
       context: .
       dockerfile: Dockerfile
     image:
-      user/fastapi_template
-    container_name: fastapi_template
+      ghcr.io/strast-upm/hunter
+    container_name: hunter
     ports:
-      - "8000:8000"
+      - "80:8000"
     networks:
       - main_network
 
