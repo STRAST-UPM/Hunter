@@ -10,5 +10,4 @@ app = FastAPI()
 
 # Routers inclusion
 app.include_router(router=default_router)
-app.include_router(router=users_router)
-app.include_router(router=items_router)
+app.include_router(router=track_router)

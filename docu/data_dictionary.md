@@ -4,15 +4,35 @@
 
 ### Table: `` 
 
-|   |   |   |   |
-|---|---|---|---|
-|   |   |   |   |
+| Column | Type | Description |
+|--------|------|-------------|
+|        |      |             |
 
 ```sql
 
 ```
 
-### Table: `traceroute`
+### Table: `ip_addresses`
+
+| Column  | Type         | Description |
+|---------|--------------|-------------|
+| address | VARCHAR (PK) |             |
+
+```sql
+
+```
+
+### Table: `pings`
+
+| Column | Type | Description |
+|--------|------|-------------|
+|        |      |             |
+
+```sql
+
+```
+
+### Table: `traceroutes`
 
 | Columna    | Tipo         | Descripción                  |
 |------------|--------------|------------------------------|
@@ -22,7 +42,7 @@
 | destino_ip | VARCHAR      | Destiny IP                   |
 
 ```sql
-CREATE TABLE traceroute (
+CREATE TABLE traceroutes (
     id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL,
     origen_ip VARCHAR NOT NULL,
@@ -39,9 +59,9 @@ CREATE TABLE traceroute (
 | hop_position  | INTEGER      | Hop position in the traceroute |
 
 ```sql
-CREATE TABLE traceroute_hops (
+CREATE TABLE traceroutes_hops (
     id SERIAL PRIMARY KEY,
-    traceroute_id INTEGER NOT NULL REFERENCES traceroute(id) ON DELETE CASCADE,
+    traceroute_id INTEGER NOT NULL REFERENCES traceroutes(id) ON DELETE CASCADE,
     hop_position INTEGER NOT NULL
 );
 ```
@@ -57,9 +77,9 @@ CREATE TABLE traceroute_hops (
 | rtt_ms      | FLOAT         | Round Trip Time in ms                  |
 
 ```sql
-CREATE TABLE hop_response (
+CREATE TABLE hops_responses (
     id SERIAL PRIMARY KEY,
-    hop_id INTEGER NOT NULL REFERENCES traceroute_hops(id) ON DELETE CASCADE,
+    hop_id INTEGER NOT NULL REFERENCES traceroutes_hops(id) ON DELETE CASCADE,
     ip_address VARCHAR NOT NULL,
     hostname VARCHAR,
     rtt_ms FLOAT

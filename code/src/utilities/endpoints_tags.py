@@ -5,11 +5,9 @@ BASE_ENDPOINT = ""
 
 # Default endpoint
 DEFAULT_TAG = "default"
+DEFAULT_ENDPOINT = f"{BASE_ENDPOINT}/"
 
-# User endpoints and tags
-USERS_TAG = "users"
-BASE_USERS_ENDPOINT = f"{BASE_ENDPOINT}/users"
-
-# Items endpoints and tags
-ITEMS_TAG = "items"
-BASE_ITEMS_ENDPOINT = f"{BASE_ENDPOINT}/items"
+# Tracks endpoints
+TRACK_TAG = "track"
+BASE_TRACK_ENDPOINT = f"{BASE_ENDPOINT}/track"
+TRACK_IP_ENDPOINT = f"{BASE_TRACK_ENDPOINT}/ip"
