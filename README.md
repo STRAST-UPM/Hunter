@@ -31,7 +31,7 @@ sudo docker run \
 sudo docker compose up -d
 ```
 
-### Direcciones
+### Web browser interfaces
 
 - [Hunter Swagger](http://localhost/docs)
 - [Postgres admin console](http://localhost:8080)

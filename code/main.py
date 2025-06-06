@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 # internal imports
 # Routers imports
-from src.classes.routers import *
+from src.routers import *
 
 # needs to be created outside __main__ to be found by the executing command
 app = FastAPI()

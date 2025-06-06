@@ -1,11 +1,12 @@
 FROM python:3.12-bookworm
 
-WORKDIR /usr/src/fastapi
+LABEL org.opencontainers.image.source=https://github.com/STRAST-UPM/Hunter
+
+WORKDIR /usr/src/hunter
+COPY ./code/main.py .
+COPY ./code/src ./src
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./code ./code
-
-WORKDIR /usr/src/fastapi/code
-CMD [ "fastapi", "run", "main.py" ]
+CMD ["fastapi", "run", "main.py"]
