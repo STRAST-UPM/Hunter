@@ -1,12 +1,11 @@
 # external imports
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 # internal imports
 from ..utilities.enums import ProbeObjectTypeRIPEMeasurementRequest
 
 
-@dataclass(kw_only=True)
-class ProbeObjectRipeMeasurementRequestModel:
+class ProbeObjectRipeMeasurementRequestModel(BaseModel):
     requested: int
     type: ProbeObjectTypeRIPEMeasurementRequest
-    value: [str, int]
+    value: str

@@ -1,13 +1,13 @@
 # external imports
-from dataclasses import dataclass
+from pydantic import BaseModel
 # from datetime import datetime
 
 # internal imports
 from ..utilities.enums import AddressFamilyRIPEMeasurementRequest
 from ..utilities.enums import DefinitionTypeRIPEMeasurementRequest
 
-@dataclass(kw_only=True)
-class BaseDefinitionRIPEMeasurementRequestModel:
+
+class BaseDefinitionRIPEMeasurementRequestModel(BaseModel):
     # mandatory ones
     description: str
     af: AddressFamilyRIPEMeasurementRequest

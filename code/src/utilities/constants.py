@@ -1,0 +1,2 @@
+# Texts
+TRACEROUTE_MEASUREMENT_DESCRIPTION = "Hunter traceroute"

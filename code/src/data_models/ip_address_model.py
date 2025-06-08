@@ -1,10 +1,10 @@
 # external imports
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 # internal imports
 
-@dataclass
-class IpAddressModel:
+
+class IpAddressModel(BaseModel):
     address: str
     is_anycast: bool
     is_bogon: bool
