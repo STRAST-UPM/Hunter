@@ -12,14 +12,35 @@
 
 ```
 
-### Table: `ip_addresses`
+### Table: `tracks`
 
-| Column  | Type         | Description |
-|---------|--------------|-------------|
-| address | VARCHAR (PK) |             |
+| Column | Type         | Description                                                                |
+|--------|--------------|----------------------------------------------------------------------------|
+| id     | INTEGER (PK) | Unique ID of the track                                                     |
+| status | INTEGER      | Status of track execution. 0 if FINISHED, 1 if IN_PROGRESS and -1 if ERROR |
 
 ```sql
+CREATE TABLE tracks (
+    id SERIAL PRIMARY KEY,
+    status INTEGER NOT NULL,
+    ip_address VARCHAR NOT NULL REFERENCES ip_addresses(address) ON DELETE CASCADE,
+)
+```
 
+### Table: `ip_addresses`
+
+| Column     | Type         | Description                     |
+|------------|--------------|---------------------------------|
+| address    | VARCHAR (PK) | IP address                      |
+| is_anycast | BIT          | BIT value for TRUE, 0 for FALSE |
+| is_bogon   | BIT          | BIT value for TRUE, 0 for FALSE |
+
+```sql
+CREATE TABLE ip_addresses (
+    address VARCHAR PRIMARY KEY,
+    is_anycast BIT NOT NULL,
+    is_bogon BIT NOT NULL
+)
 ```
 
 ### Table: `pings`

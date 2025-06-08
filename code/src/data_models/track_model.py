@@ -7,5 +7,5 @@ from ..utilities.enums import TrackStatus
 
 
 class TrackModel(BaseModel):
-    ip_to_track: IpAddressModel
+    ip: IpAddressModel
     status: TrackStatus
