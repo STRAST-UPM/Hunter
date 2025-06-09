@@ -14,10 +14,11 @@
 
 ### Table: `tracks`
 
-| Column | Type         | Description                                                                |
-|--------|--------------|----------------------------------------------------------------------------|
-| id     | INTEGER (PK) | Unique ID of the track                                                     |
-| status | INTEGER      | Status of track execution. 0 if FINISHED, 1 if IN_PROGRESS and -1 if ERROR |
+| Column             | Type         | Description                                                                |
+|--------------------|--------------|----------------------------------------------------------------------------|
+| id                 | INTEGER (PK) | Unique ID of the track                                                     |
+| status             | INTEGER      | Status of track execution. 0 if FINISHED, 1 if IN_PROGRESS and -1 if ERROR |
+| status_description | VARCHAR      | Description of the current status of the track. If ERROR, an error message |
 
 ```sql
 CREATE TABLE tracks (
@@ -106,3 +107,4 @@ CREATE TABLE hops_responses (
     rtt_ms FLOAT
 );
 ```
+

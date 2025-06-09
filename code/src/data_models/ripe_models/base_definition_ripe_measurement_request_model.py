@@ -9,8 +9,9 @@ from ...utilities.enums import DefinitionTypeRIPEMeasurementRequest
 
 class BaseDefinitionRIPEMeasurementRequestModel(BaseModel):
     # mandatory ones
+    target: str
     description: str
-    af: AddressFamilyRIPEMeasurementRequest
+    af: AddressFamilyRIPEMeasurementRequest = AddressFamilyRIPEMeasurementRequest.IPV4
     type: DefinitionTypeRIPEMeasurementRequest
     # optional, default values
     resolve_on_probe: bool = False

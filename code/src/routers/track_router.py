@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from ..data_models.track_request_model import TrackRequestModel
 from ..data_models.track_start_response_model import TrackStartReponseModel
 from ..modules.track_controller import TrackController
-from ..utilities.endpoints_tags import (
+from ..utilities.endpoints import (
     TRACK_TAG,
     BASE_ENDPOINT,
     TRACK_IP_ENDPOINT

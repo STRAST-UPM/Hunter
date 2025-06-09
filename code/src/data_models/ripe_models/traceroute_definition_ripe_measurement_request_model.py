@@ -6,5 +6,4 @@ from ...utilities.enums import DefinitionTypeRIPEMeasurementRequest
 
 
 class TracerouteDefinitionRIPEMeasurementRequestModel(BaseDefinitionRIPEMeasurementRequestModel):
-    target: str
     type: DefinitionTypeRIPEMeasurementRequest = DefinitionTypeRIPEMeasurementRequest.TRACEROUTE

@@ -9,3 +9,4 @@ from ..utilities.enums import TrackStatus
 class TrackModel(BaseModel):
     ip: IpAddressModel
     status: TrackStatus
+    status_description: str

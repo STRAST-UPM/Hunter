@@ -6,5 +6,4 @@ from ...utilities.enums import DefinitionTypeRIPEMeasurementRequest
 
 
 class PingDefinitionRIPEMeasurementRequestModel(BaseDefinitionRIPEMeasurementRequestModel):
-    target: str
     type = DefinitionTypeRIPEMeasurementRequest.PING

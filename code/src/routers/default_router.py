@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 
 # internal imports
-from ..utilities.endpoints_tags import (
+from ..utilities.endpoints import (
     DEFAULT_TAG,
     DEFAULT_ENDPOINT
 )
