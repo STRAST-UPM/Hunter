@@ -3,8 +3,8 @@ from pydantic import BaseModel
 # from datetime import datetime
 
 # internal imports
-from ..utilities.enums import AddressFamilyRIPEMeasurementRequest
-from ..utilities.enums import DefinitionTypeRIPEMeasurementRequest
+from ...utilities.enums import AddressFamilyRIPEMeasurementRequest
+from ...utilities.enums import DefinitionTypeRIPEMeasurementRequest
 
 
 class BaseDefinitionRIPEMeasurementRequestModel(BaseModel):

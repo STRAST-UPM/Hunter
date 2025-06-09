@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 # internal imports
-from ..utilities.enums import ProbeObjectTypeRIPEMeasurementRequest
+from ...utilities.enums import ProbeObjectTypeRIPEMeasurementRequest
 
 
 class ProbeObjectRipeMeasurementRequestModel(BaseModel):

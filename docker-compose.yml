@@ -1,15 +1,15 @@
 services:
-  hunter:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image:
-      ghcr.io/strast-upm/hunter
-    container_name: hunter
-    ports:
-      - "80:8000"
-    networks:
-      - main_network
+  #hunter:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile
+  #  image:
+  #    ghcr.io/strast-upm/hunter
+  #  container_name: hunter
+  #  ports:
+  #    - "80:8000"
+  #  networks:
+  #    - main_network
 
   pgadmin:
     image: dpage/pgadmin4

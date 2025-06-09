@@ -5,8 +5,8 @@ import asyncio
 from ..data_models.track_model import TrackModel
 from ..data_models.track_request_model import TrackRequestModel
 from ..data_models.track_start_response_model import TrackStartReponseModel
-from ..data_models.traceroute_definition_ripe_measurement_request_model import TracerouteDefinitionRIPEMeasurementRequestModel
-from ..data_models.probe_object_ripe_measurement_request_model import ProbeObjectRipeMeasurementRequestModel
+from ..data_models.ripe_models.traceroute_definition_ripe_measurement_request_model import TracerouteDefinitionRIPEMeasurementRequestModel
+from ..data_models.ripe_models.probe_object_ripe_measurement_request_model import ProbeObjectRipeMeasurementRequestModel
 from ..data_models.ip_address_model import IpAddressModel
 from ..utilities.enums import (
     TrackStatus,
