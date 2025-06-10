@@ -3,8 +3,8 @@ import asyncio
 import json
 
 # internal imports
-from ..data_models.track_model import TrackModel
-from ..data_models.ip_address_model import IpAddressModel
+from ..data_models.hunter_models.track_model import TrackModel
+from ..data_models.hunter_models.ip_address_model import IpAddressModel
 from ..data_models.track_request_model import TrackRequestModel
 from ..data_models.track_start_response_model import TrackStartReponseModel
 

@@ -3,7 +3,7 @@ import requests
 import json
 
 # internal imports
-from ..data_models.ip_address_model import IpAddressModel
+from ..data_models.hunter_models.ip_address_model import IpAddressModel
 from ..data_models.ripe_models.base_definition_ripe_measurement_request_model import BaseDefinitionRIPEMeasurementRequestModel
 from ..data_models.ripe_models.probe_object_ripe_measurement_request_model import ProbeObjectRipeMeasurementRequestModel
 from ..data_models.ripe_models.ripe_measurement_response_model import RipeMeasurementResponseModel
