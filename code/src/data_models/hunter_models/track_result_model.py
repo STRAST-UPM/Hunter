@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 
 # internal imports
+from .airport_model import AirportModel
 
 
 class TrackResultModel(BaseModel):
@@ -15,4 +16,4 @@ class TrackResultModel(BaseModel):
     destination_longitude: float
     # TODO change to polygon type
     intersection_area_polygon: str
-    airports_in_intersection: list
+    airports_in_intersection: list[AirportModel]
