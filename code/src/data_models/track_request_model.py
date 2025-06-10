@@ -8,7 +8,7 @@ from ..utilities.enums import ProbeObjectTypeRIPEMeasurementRequest
 class TrackRequestModel(BaseModel):
     ip_address: str
     check_if_anycast: bool = False
-    slim_method: bool = True
+    slim: bool = True
     probes_requested: int
     probes_selection_type: ProbeObjectTypeRIPEMeasurementRequest
     probes_values: str

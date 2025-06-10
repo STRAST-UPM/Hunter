@@ -47,7 +47,7 @@ class TrackController:
             # TODO update track with error
             pass
 
-        if not track_request.slim_method:
+        if not track_request.slim:
             self.ping_track_phase(track_request=track_request)
 
 
