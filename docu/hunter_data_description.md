@@ -56,12 +56,11 @@ erDiagram
         address_family INTEGER "NOT NULL"
         description VARCHAR "NOT NULL"
         is_oneoff BOOLEAN "NOT NULL"
-        is_public BOOLEAN "NOT NULL" 
-        max_hops INTEGER "NOT NULL" 
-        packets INTEGER "NOT NULL"
+        is_public BOOLEAN "NOT NULL"
         resolve_on_probe BOOLEAN "NOT NULL"
         target VARCHAR "NOT NULL"
         target_ip VARCHAR "NOT NULL"
+        target_asn INTEGER "NOT NULL"
         type VARCHAR "NOT NULL"
         track_id INTEGER FK "NOT NULL"
     }
@@ -102,7 +101,7 @@ erDiagram
         max_rtt_ms FLOAT "NOT NULL"
         min_rtt_ms FLOAT "NOT NULL"
         average_rtt_ms FLOAT "NOT NULL"
-        caverage_area_polygon VARCHAR
+        coverage_area_polygon VARCHAR
         measurement_id INTEGER FK "NOT NULL"
     }
     
@@ -248,11 +247,10 @@ CREATE TABLE track_disc_intersections_airports (
 | description      | VARCHAR      | Description of the measurement                 |
 | is_oneoff        | BOOLEAN      | Flag indicating if it's a one-time measurement |
 | is_public        | BOOLEAN      | Flag indicating if measurement is public       |
-| max_hops         | INTEGER      | Maximum number of hops allowed                 |
-| packets          | INTEGER      | Number of packets sent                         |
 | resolve_on_probe | BOOLEAN      | Flag to resolve hostnames on probe             |
 | target           | VARCHAR      | Target hostname or IP address                  |
 | target_ip        | VARCHAR      | Resolved target IP address                     |
+| target_asn       | INTEGER      | IP ASN owner                                   |
 | type             | VARCHAR      | Type of measurement (ping, traceroute, etc.)   |
 | track_id         | INTEGER (FK) | Reference to the associated track              |
 
@@ -264,11 +262,10 @@ CREATE TABLE measurements (
     description VARCHAR NOT NULL,
     is_oneoff BOOLEAN NOT NULL,
     is_public BOOLEAN NOT NULL,
-    max_hops INTEGER NOT NULL,
-    packets INTEGER NOT NULL,
     resolve_on_probe BOOLEAN NOT NULL,
     target VARCHAR NOT NULL,
     target_ip VARCHAR NOT NULL,
+    target_asn INTEGER NOT NULL,
     type VARCHAR NOT NULL,
     track_id INTEGER NOT NULL REFERENCES tracks(id) ON DELETE CASCADE
 );

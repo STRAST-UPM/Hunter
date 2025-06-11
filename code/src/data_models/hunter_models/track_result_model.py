@@ -16,4 +16,5 @@ class TrackResultModel(BaseModel):
     destination_longitude: float
     # TODO change to polygon type
     intersection_area_polygon: str
+
     airports_in_intersection: list[AirportModel]

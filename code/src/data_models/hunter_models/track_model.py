@@ -14,6 +14,6 @@ class TrackModel(BaseModel):
     status: TrackStatus
     status_description: str
     slim: bool
-
     ip: IpAddressModel
+
     track_results: list[TrackResultModel]

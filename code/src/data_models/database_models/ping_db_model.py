@@ -19,7 +19,7 @@ class PingDBModel(BaseDBModel):
     max_rtt_ms = Column(Float, nullable=False)
     min_rtt_ms = Column(Float, nullable=False)
     average_rtt_ms = Column(Float, nullable=False)
-    caverage_area_polygon = Column(String, nullable=True)
+    coverage_area_polygon = Column(String, nullable=True)
     measurement_id = Column(Integer, ForeignKey('measurements.id', ondelete='CASCADE'), nullable=False)
 
     # Relationships
