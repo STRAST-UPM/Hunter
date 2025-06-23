@@ -4,8 +4,9 @@ from datetime import datetime
 
 # internal imports
 from .ip_address_model import IpAddressModel
-from ...utilities.enums import TrackStatus
+from .measurement_model import MeasurementModel
 from .track_result_model import TrackResultModel
+from ...utilities.enums import TrackStatus
 
 
 class TrackModel(BaseModel):
@@ -17,3 +18,4 @@ class TrackModel(BaseModel):
     ip: IpAddressModel
 
     track_results: list[TrackResultModel]
+    measurements: list[MeasurementModel]

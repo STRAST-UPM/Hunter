@@ -1,6 +1,5 @@
 # external imports
-from pydantic import BaseModel
-from datetime import datetime
+from shapely import Polygon
 
 # internal imports
 from .base_measurement_result_model import BaseMeasurementResultModel
@@ -11,5 +10,4 @@ class PingModel(BaseMeasurementResultModel):
     max_rtt_ms: float
     min_rtt_ms: float
     average_rtt_ms: float
-    # TODO change to polygon type
-    coverage_area_polygon: str
+    coverage_area_polygon: Polygon

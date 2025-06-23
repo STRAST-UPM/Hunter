@@ -21,5 +21,4 @@ class MeasurementModel(BaseModel):
     target_asn: int
     type: DefinitionTypeRIPEMeasurementRequest
 
-    # TODO decide if this list is going to exists
     results: list[BaseMeasurementResultModel]
