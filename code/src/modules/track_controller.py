@@ -33,7 +33,8 @@ class TrackController:
     async def post_track_ip(self, track_request: TrackRequestModel) -> TrackStartReponseModel:
         asyncio.create_task(self.track_ip(track_request))
 
-        track_id = self._tracks_provider.create_new_track()
+        track_id = self._tracks_provider.create_new_track(
+            track_request=track_request)
 
         return TrackStartReponseModel(track_id=track_id)
 

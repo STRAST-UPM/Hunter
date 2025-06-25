@@ -31,6 +31,13 @@ sudo docker run \
 sudo docker compose up -d
 ```
 
+## Notes
+```sql
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public';
+```
+
 ### Web browser interfaces
 
 - [Hunter Swagger](http://localhost/docs)
