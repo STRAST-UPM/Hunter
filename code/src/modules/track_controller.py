@@ -7,7 +7,8 @@ from ..data_models.hunter_models.track_model import TrackModel
 from ..data_models.track_request_model import TrackRequestModel
 from ..data_models.track_start_response_model import TrackStartReponseModel
 
-from ..data_models.ripe_models.traceroute_definition_ripe_measurement_request_model import TracerouteDefinitionRIPEMeasurementRequestModel
+from ..data_models.ripe_models.traceroute_definition_ripe_measurement_request_model import \
+    TracerouteDefinitionRIPEMeasurementRequestModel
 from ..data_models.ripe_models.probe_object_ripe_measurement_request_model import ProbeObjectRipeMeasurementRequestModel
 from ..data_models.ripe_models.ripe_measurement_response_model import RipeMeasurementResponseModel
 
@@ -36,7 +37,8 @@ class TrackController:
 
     # Internal functions
     async def _track_ip(self, track_request: TrackRequestModel):
-        traceroute_start_measurement_response = self.traceroute_track_phase_start_measurement(track_request=track_request)
+        traceroute_start_measurement_response = self.traceroute_track_phase_start_measurement(
+            track_request=track_request)
 
         print(json.dumps(traceroute_start_measurement_response.model_dump(), indent=4))
 
@@ -56,8 +58,8 @@ class TrackController:
         if not track_request.slim:
             self.ping_track_phase(track_request=track_request)
 
-
-    def traceroute_track_phase_start_measurement(self, track_request: TrackRequestModel) -> RipeMeasurementResponseModel:
+    def traceroute_track_phase_start_measurement(self,
+                                                 track_request: TrackRequestModel) -> RipeMeasurementResponseModel:
         traceroute_definition = TracerouteDefinitionRIPEMeasurementRequestModel(
             description=TRACEROUTE_MEASUREMENT_DESCRIPTION,
             target=track_request.ip_address,
@@ -74,7 +76,6 @@ class TrackController:
             probes=[traceroute_probes],
             ripe_api_key=track_request.api_key,
         )
-
 
     def traceroute_track_phase_measurement_analysis(self, traceroute_measurement_id: int):
         pass
