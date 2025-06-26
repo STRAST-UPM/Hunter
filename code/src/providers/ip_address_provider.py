@@ -5,7 +5,6 @@ import ipaddress
 # internal imports
 from .database_provider import DatabaseProvider
 from ..data_models.hunter_models.ip_address_model import IpAddressModel
-from ..data_models.track_request_model import TrackRequestModel
 from ..data_models.database_models import IpAddressDBModel
 
 
@@ -13,15 +12,15 @@ class IPAddressProvider(DatabaseProvider):
     def __init__(self):
         super().__init__()
 
-    def add_new_ip(self, ip_address: str):
+    def add_new_ip_address(self, ip_address: str) -> IpAddressModel:
         is_anycast = self.is_anycast_service_check(ip_address)
-        return self.add(
-            db_model=IpAddressDBModel(
+        return IpAddressModel.from_db(self.add(
+            IpAddressDBModel(
                 address=ip_address,
                 is_bogon=False,
-                is_anycast=is_anycast,
-            ),
-        )
+                is_anycast=is_anycast
+            )
+        ))
 
     def is_anycast_service_check(self, ip_address: str) -> bool:
         return True
@@ -43,4 +42,3 @@ class IPAddressProvider(DatabaseProvider):
             model_class=IpAddressDBModel,
             obj_id=ip_address
         )
-

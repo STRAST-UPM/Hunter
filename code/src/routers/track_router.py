@@ -21,4 +21,4 @@ track_router = APIRouter(
 @track_router.post(f"{TRACK_IP_ENDPOINT}")
 async def post_track_ip(track_request: TrackRequestModel) -> TrackStartReponseModel:
     track_controller = TrackController()
-    return await track_controller.post_track_ip(track_request)
+    return await track_controller.track_ip_post_request(track_request)

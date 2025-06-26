@@ -21,7 +21,7 @@ sudo docker push ghcr.io/strast-upm/hunter:latest
 - Run project just project container
 ```shell
 sudo docker run \
-  -p "80:8000" \
+  -p "8000:8000" \
   --name hunter \
   -d strast-upm/hunter:latest
 ```
@@ -38,9 +38,28 @@ FROM information_schema.tables
 WHERE table_schema = 'public';
 ```
 
+```sql
+SELECT 'DROP TABLE IF EXISTS "' || tablename || '" CASCADE;'
+FROM pg_tables 
+WHERE schemaname = 'public';
+```
+
+```sql
+DROP TABLE IF EXISTS ip_addresses CASCADE;
+DROP TABLE IF EXISTS tracks CASCADE;
+DROP TABLE IF EXISTS measurements CASCADE;
+DROP TABLE IF EXISTS tracks_results CASCADE;
+DROP TABLE IF EXISTS pings CASCADE;
+DROP TABLE IF EXISTS traceroutes CASCADE;
+DROP TABLE IF EXISTS track_disc_intersections_airports CASCADE;
+DROP TABLE IF EXISTS airports CASCADE;
+DROP TABLE IF EXISTS traceroutes_hops CASCADE;
+DROP TABLE IF EXISTS hops_responses CASCADE;
+```
+
 ### Web browser interfaces
 
-- [Hunter Swagger](http://localhost/docs)
+- [Hunter Swagger](http://127.0.0.1:8000/docs)
 - [Postgres admin console](http://localhost:8080)
 
 ## Related publications

@@ -2,8 +2,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.inspection import inspect
 from contextlib import contextmanager
-from typing import Type, List, Optional, TypeVar, Generic
+from typing import Type, List, Optional, TypeVar
 import logging
 
 # internal imports
@@ -50,7 +51,12 @@ class DatabaseProvider:
         finally:
             session.close()
 
-    def add(self, db_model: BaseDBModel) -> Optional[int]:
+    def get_pk_value(self, db_model: BaseDBModel):
+        inspector = inspect(db_model.__class__)
+        pk_column = inspector.primary_key[0]
+        return getattr(db_model, pk_column.name)
+
+    def add(self, db_model: T) -> Optional[T]:
         """
         Adds a new object to the database.
 
@@ -58,7 +64,7 @@ class DatabaseProvider:
             db_model: Model instance to add
 
         Returns:
-            ID of the created object or None if it fails
+            Created object or None if it fails
         """
         try:
             with self.get_session() as session:
@@ -67,7 +73,7 @@ class DatabaseProvider:
                 session.flush()
                 # Refresh the object with database data
                 session.refresh(db_model)
-                return db_model.id
+                return db_model
         except SQLAlchemyError as e:
             logger.error(f"Error adding object: {e}")
             return None
@@ -189,7 +195,7 @@ class DatabaseProvider:
         try:
             with self.get_session() as session:
                 return session.query(model_class).filter(
-                    model_class.id == obj_id
+                    self.get_pk_value(model_class) == obj_id
                 ).first() is not None
         except SQLAlchemyError as e:
             logger.error(f"Error checking existence of ID {obj_id}: {e}")
