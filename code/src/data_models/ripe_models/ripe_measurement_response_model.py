@@ -5,5 +5,5 @@ from typing import Optional
 # internal imports
 
 class RipeMeasurementResponseModel(BaseModel):
-    measurement_list_id: list[int] = Field(alias="measurements")
-    error_msg: Optional[str] = None
+    measurement: Optional[list[int]] = Field(alias="measurements", default=None)
+    error: bool = False

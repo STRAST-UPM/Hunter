@@ -73,6 +73,8 @@ class DatabaseProvider:
                 session.flush()
                 # Refresh the object with database data
                 session.refresh(db_model)
+                # Desvinculate model from actual session keeping the data
+                session.expunge(db_model)
                 return db_model
         except SQLAlchemyError as e:
             logger.error(f"Error adding object: {e}")
@@ -92,9 +94,7 @@ class DatabaseProvider:
         try:
             with self.get_session() as session:
                 obj = session.query(model_class).get(obj_id)
-                if obj:
-                    # Prevent detached object issues
-                    session.expunge(obj)
+                session.expunge(obj)
                 return obj
         except SQLAlchemyError as e:
             logger.error(f"Error getting object by ID {obj_id}: {e}")
@@ -113,7 +113,6 @@ class DatabaseProvider:
         try:
             with self.get_session() as session:
                 objects = session.query(model_class).all()
-                # Expunge objects to make them usable outside session
                 for obj in objects:
                     session.expunge(obj)
                 return objects
@@ -194,9 +193,7 @@ class DatabaseProvider:
         """
         try:
             with self.get_session() as session:
-                return session.query(model_class).filter(
-                    self.get_pk_value(model_class) == obj_id
-                ).first() is not None
+                return session.query(model_class).get(obj_id) is not None
         except SQLAlchemyError as e:
             logger.error(f"Error checking existence of ID {obj_id}: {e}")
             return False

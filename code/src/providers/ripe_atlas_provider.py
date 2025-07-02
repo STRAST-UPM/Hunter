@@ -15,7 +15,6 @@ class RIPEAtlasProvider:
     def __init__(self):
         pass
 
-
     def start_new_measurement(
             self,
             definitions: list[BaseDefinitionRIPEMeasurementRequestModel],
@@ -23,8 +22,10 @@ class RIPEAtlasProvider:
             ripe_api_key: str,
     ) -> RipeMeasurementResponseModel:
         try:
+            # LOG: measurement parameters
             print(definitions)
             print(probes)
+
             start_measurement_response = requests.post(
                 url=RIPE_ATLAS_MEASUREMENTS_URL,
                 headers={
@@ -36,16 +37,26 @@ class RIPEAtlasProvider:
                     "probes": [
                         probe.model_dump() for probe in probes],
                 },
-            ).json()
+            )
 
-            measurement_response = RipeMeasurementResponseModel(
-                **start_measurement_response)
+            # LOG: response
+            print(json.dumps(start_measurement_response.json(), indent=4))
+
+            if start_measurement_response.ok:
+                measurement_response = RipeMeasurementResponseModel(
+                    **start_measurement_response.json())
+            else:
+                measurement_response = RipeMeasurementResponseModel(
+                    error=True
+                )
 
         except requests.HTTPError as error:
             print(error)
             measurement_response = RipeMeasurementResponseModel(
-                measurement_list_id=[],
-                error_msg=error.response.json(),
+                error=True,
             )
 
         return measurement_response
+
+    def get_measurement_results(self):
+        pass
