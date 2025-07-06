@@ -1,24 +1,30 @@
 # external imports
+from typing import Optional
+
 from pydantic import BaseModel
 from datetime import datetime
 
 # internal imports
 from .base_measurement_result_model import BaseMeasurementResultModel
+
+# from ..database_models.measurement_db_model import MeasurementDBModel
+
 from ...utilities.enums import (
-    DefinitionTypeRIPEMeasurementRequest
+    DefinitionTypeRIPEMeasurementRequest,
+    AddressFamilyRIPEMeasurementRequest
 )
 
 class MeasurementModel(BaseModel):
     id: int
     timestamp: datetime
-    address_family: int
+    address_family: AddressFamilyRIPEMeasurementRequest
     description: str
     is_oneoff: bool
     is_public: bool
     resolve_on_probe: bool
     target: str
     target_ip: str
-    target_asn: int
+    target_asn: Optional[int]
     type: DefinitionTypeRIPEMeasurementRequest
 
-    results: list[BaseMeasurementResultModel]
+    results: Optional[list[BaseMeasurementResultModel]] = None

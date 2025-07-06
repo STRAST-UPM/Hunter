@@ -4,5 +4,5 @@ from pydantic import BaseModel
 # internal imports
 
 
-class TrackStartReponseModel(BaseModel):
+class TrackStartResponseModel(BaseModel):
     track_id: int

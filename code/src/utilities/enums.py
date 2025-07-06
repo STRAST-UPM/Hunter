@@ -31,3 +31,13 @@ class ProbeObjectTypeRIPEMeasurementRequest(str, Enum):
     ASN: str = "asn"
     PROBES: str = "probes"
     MSM: str = "msm"
+
+class MeasurementStatusRIPE(int, Enum):
+    SPECIFIED: int = 0
+    SCHEDULED: int = 1
+    ONGOING: int = 2
+    STOPPED: int = 4
+    FORCED_TO_STOP: int = 5
+    NO_SUITABLE_PROBES: int = 6
+    FAILED: int = 7
+    ARCHIVED: int = 8

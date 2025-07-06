@@ -2,8 +2,8 @@
 import asyncio
 
 # internal imports
-from ..data_models.track_request_model import TrackRequestModel
-from ..data_models.track_start_response_model import TrackStartReponseModel
+from ..data_models.api_models.track_request_model import TrackRequestModel
+from ..data_models.api_models.track_start_response_model import TrackStartResponseModel
 
 from ..providers.tracks_provider import TracksProvider
 
@@ -15,7 +15,7 @@ class TrackRequestsManager:
         self._tracks_provider = TracksProvider()
 
     # API request controller handlers
-    async def post_track_ip(self, track_request: TrackRequestModel) -> TrackStartReponseModel:
+    async def post_track_ip(self, track_request: TrackRequestModel) -> TrackStartResponseModel:
         track = self._tracks_provider.create_new_track(
             ip_address=track_request.ip_address,
             slim=track_request.slim,
@@ -31,4 +31,4 @@ class TrackRequestsManager:
         )
         asyncio.create_task(hunter.track_ip())
 
-        return TrackStartReponseModel(track_id=track.id)
+        return TrackStartResponseModel(track_id=track.id)

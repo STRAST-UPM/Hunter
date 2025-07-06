@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 # internal imports
-from ..utilities.enums import ProbeObjectTypeRIPEMeasurementRequest
+from ...utilities.enums import ProbeObjectTypeRIPEMeasurementRequest
 
 
 class TrackRequestModel(BaseModel):
@@ -11,5 +11,5 @@ class TrackRequestModel(BaseModel):
     slim: bool = True
     probes_requested: int
     probes_selection_type: ProbeObjectTypeRIPEMeasurementRequest
-    probes_values: str
+    probes_values: list[str]
     api_key: str = None
