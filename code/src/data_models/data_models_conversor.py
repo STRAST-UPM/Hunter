@@ -2,8 +2,13 @@
 
 # internal imports
 from .hunter_models.measurement_model import MeasurementModel
-
 from .database_models.measurement_db_model import MeasurementDBModel
+from .hunter_models.traceroute_model import TracerouteModel
+from .database_models.traceroute_db_model import TracerouteDBModel
+from .hunter_models.traceroute_hop_model import TracerouteHopModel
+from .database_models.traceroute_hop_db_model import TracerouteHopDBModel
+from .hunter_models.hop_response_model import HopResponseModel
+from .database_models.hop_response_db_model import HopResponseDBModel
 
 from ..utilities.enums import (
     AddressFamilyRIPEMeasurementRequest,
@@ -13,7 +18,10 @@ from ..utilities.enums import (
 
 class DataModelsConversor:
     @staticmethod
-    def measurement_to_db(measurement_model: MeasurementModel, track_id: int) -> MeasurementDBModel:
+    def measurement_to_db(
+            measurement_model: MeasurementModel,
+            track_id: int
+    ) -> MeasurementDBModel:
         return MeasurementDBModel(
             id=measurement_model.id,
             timestamp=measurement_model.timestamp,
@@ -30,7 +38,9 @@ class DataModelsConversor:
         )
 
     @staticmethod
-    def measurement_to_hunter_model(measurement_db_model: MeasurementDBModel) -> MeasurementModel:
+    def measurement_to_hunter_model(
+            measurement_db_model: MeasurementDBModel
+    ) -> MeasurementModel:
         return MeasurementModel(
             id=measurement_db_model.id,
             timestamp=measurement_db_model.timestamp,
@@ -45,4 +55,55 @@ class DataModelsConversor:
             target_asn=measurement_db_model.target_asn,
             type=DefinitionTypeRIPEMeasurementRequest(
                 measurement_db_model.type),
+        )
+
+    @staticmethod
+    def traceroute_to_db_model(
+            traceroute_model: TracerouteModel,
+            measurement_id: int
+    ) -> TracerouteDBModel:
+        return TracerouteDBModel(
+            timestamp=traceroute_model.timestamp,
+            probe_id=traceroute_model.probe_id,
+            origin_ip=traceroute_model.origin_ip,
+            public_origin_ip=traceroute_model.public_origin_ip,
+            destination_name=traceroute_model.destination_name,
+            destination_ip=traceroute_model.destination_ip,
+            measurement_id=measurement_id,
+        )
+
+    @staticmethod
+    def traceroute_to_hunter_model(
+            traceroute_db_model: TracerouteDBModel
+    ) -> TracerouteModel:
+        # TODO
+        pass
+
+    @staticmethod
+    def traceroute_hop_to_db_model(
+            traceroute_hop_model: TracerouteHopModel,
+            traceroute_id: int
+    ) -> TracerouteHopDBModel:
+        return TracerouteHopDBModel(
+            hop_position=traceroute_hop_model.hop_position,
+            traceroute_id=traceroute_id,
+        )
+
+    @staticmethod
+    def traceroute_hop_to_hunter_model(
+            traceroute_hop_db_model: TracerouteHopDBModel
+    ) -> TracerouteHopModel:
+        # TODO
+        pass
+
+    @staticmethod
+    def hop_response_to_db_model(
+            hop_response_model: HopResponseModel,
+            hop_id: int
+    ) -> HopResponseDBModel:
+        return HopResponseDBModel(
+            ip_address=hop_response_model.ip_address,
+            ttl=hop_response_model.ttl,
+            rtt_ms=hop_response_model.rtt_ms,
+            hop_id=hop_id,
         )

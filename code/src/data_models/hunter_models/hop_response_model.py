@@ -7,4 +7,4 @@ class HopResponseModel(BaseModel):
     id: int
     ip_address: str
     ttl: int
-    rtt_ms: int
+    rtt_ms: float

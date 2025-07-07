@@ -5,6 +5,7 @@ import json
 # internal imports
 from ..data_models.hunter_models.track_model import TrackModel
 from ..data_models.hunter_models.measurement_model import MeasurementModel
+from ..data_models.hunter_models.traceroute_model import TracerouteModel
 
 from ..data_models.ripe_models.traceroute_definition_ripe_measurement_request_model import \
     TracerouteDefinitionRIPEMeasurementRequestModel
@@ -54,7 +55,7 @@ class Hunter:
             measurement_ids=traceroute_start_measurement_response.measurement
         )
 
-        self._get_traceroute_measurement_results(
+        self._store_traceroute_measurement_results(
             measurement_ids=traceroute_start_measurement_response.measurement
         )
 
@@ -90,21 +91,6 @@ class Hunter:
             probes=[traceroute_probes],
         )
 
-    def _get_traceroute_measurement_results(self, measurement_ids: list[int]):
-        for measurement_id in measurement_ids:
-            self._ripe_atlas_provider.get_measurement_results(
-                measurement_id=measurement_id,
-                measurement_type=DefinitionTypeRIPEMeasurementRequest.TRACEROUTE
-            )
-
-    def _start_ping_measurement(self):
-        # TODO
-        pass
-
-    def _get_ping_measurement_results(self):
-        # TODO
-        pass
-
     def _save_measurements_description(self, measurement_ids: list[int]):
         for measurement_id in measurement_ids:
             measurement: MeasurementModel = self._ripe_atlas_provider.get_measurement_description(measurement_id)
@@ -113,3 +99,48 @@ class Hunter:
                     measurement_model=measurement,
                     track_id=self._track.id
                 )
+
+    def _store_traceroute_measurement_results(self, measurement_ids: list[int]):
+        for measurement_id in measurement_ids:
+            traceroute_results = self._get_traceroute_measurement_results(
+                measurement_id=measurement_id
+            )
+            self._save_traceroute_results(
+                traceroute_results=traceroute_results,
+                measurement_id=measurement_id
+            )
+
+    def _get_traceroute_measurement_results(self, measurement_id: int) -> list[TracerouteModel]:
+            traceroute_results = self._ripe_atlas_provider.get_measurement_results(
+                measurement_id=measurement_id,
+                measurement_type=DefinitionTypeRIPEMeasurementRequest.TRACEROUTE
+            )
+
+            # LOG: data retrieved
+            print("Log from: Hunter._get_traceroute_measurement_results")
+            print(traceroute_results)
+
+            return traceroute_results
+
+    def _save_traceroute_results(
+            self,
+            traceroute_results: list[TracerouteModel],
+            measurement_id: int
+    ):
+        for traceroute_result in traceroute_results:
+            self._measurements_provider.save_traceroute_results(
+                traceroute_result=traceroute_result,
+                measurement_id=measurement_id
+            )
+
+        # LOG: save traceroute measurement results
+        print("Log from: Hunter._save_traceroute_results")
+        print("Traceroute results saved in DB")
+
+    def _start_ping_measurement(self):
+        # TODO
+        pass
+
+    def _get_ping_measurement_results(self):
+        # TODO
+        pass
