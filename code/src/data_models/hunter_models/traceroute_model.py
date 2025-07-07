@@ -1,4 +1,5 @@
 # external imports
+from typing import Optional
 
 # internal imports
 from .traceroute_hop_model import TracerouteHopModel
@@ -9,4 +10,4 @@ class TracerouteModel(BaseMeasurementResultModel):
     destination_ip: str
     destination_name: str
 
-    hops: list[TracerouteHopModel]
+    hops: Optional[list[TracerouteHopModel]] = None

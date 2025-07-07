@@ -59,14 +59,9 @@ class Hunter:
             measurement_ids=traceroute_start_measurement_response.measurement
         )
 
-        # TODO
-        # Save the measurement data in DB
-        ## MeasurementProvider / MeasurementModel add from_db
-        # Function to get results of the measurement
-        ## Times control and how to wait or not
-        # Save traceroute measurements
-        ## Save in DB
-        ## Keep them in TracerouteModel to run the algorithm
+        self._update_track_with_all_data()
+
+        print(self._track)
 
         if not self._track.slim:
             # TODO make ping phase
@@ -136,6 +131,11 @@ class Hunter:
         # LOG: save traceroute measurement results
         print("Log from: Hunter._save_traceroute_results")
         print("Traceroute results saved in DB")
+
+    def _update_track_with_all_data(self):
+        self._track = self._tracks_provider.get_track_with_relations(
+            track_id=self._track.id,
+        )
 
     def _start_ping_measurement(self):
         # TODO

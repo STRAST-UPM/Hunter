@@ -1,22 +1,43 @@
 # external imports
 
 # internal imports
+
+from .database_models import (
+    TrackDBModel,
+    TrackResultDBModel,
+    MeasurementDBModel,
+    TracerouteDBModel,
+    TracerouteHopDBModel,
+    HopResponseDBModel,
+    PingDBModel
+)
+
+from .hunter_models.track_model import TrackModel
+from .hunter_models.track_result_model import TrackResultModel
 from .hunter_models.measurement_model import MeasurementModel
-from .database_models.measurement_db_model import MeasurementDBModel
 from .hunter_models.traceroute_model import TracerouteModel
-from .database_models.traceroute_db_model import TracerouteDBModel
 from .hunter_models.traceroute_hop_model import TracerouteHopModel
-from .database_models.traceroute_hop_db_model import TracerouteHopDBModel
 from .hunter_models.hop_response_model import HopResponseModel
-from .database_models.hop_response_db_model import HopResponseDBModel
 
 from ..utilities.enums import (
     AddressFamilyRIPEMeasurementRequest,
-    DefinitionTypeRIPEMeasurementRequest
+    DefinitionTypeRIPEMeasurementRequest,
+    TrackStatus
 )
 
 
 class DataModelsConversor:
+    @classmethod
+    def track_to_hunter_model(cls, track_db_model: TrackDBModel) -> TrackModel:
+        return TrackModel(
+            id=track_db_model.id,
+            timestamp=track_db_model.timestamp,
+            status=TrackStatus(track_db_model.status),
+            status_description=track_db_model.status_description,
+            slim=track_db_model.slim,
+            ip_address=track_db_model.ip_address,
+        )
+
     @staticmethod
     def measurement_to_db(
             measurement_model: MeasurementModel,
@@ -76,8 +97,15 @@ class DataModelsConversor:
     def traceroute_to_hunter_model(
             traceroute_db_model: TracerouteDBModel
     ) -> TracerouteModel:
-        # TODO
-        pass
+        return TracerouteModel(
+            id=traceroute_db_model.id,
+            timestamp=traceroute_db_model.timestamp,
+            probe_id=traceroute_db_model.probe_id,
+            origin_ip=traceroute_db_model.origin_ip,
+            public_origin_ip=traceroute_db_model.public_origin_ip,
+            destination_ip=traceroute_db_model.destination_ip,
+            destination_name=traceroute_db_model.destination_name,
+        )
 
     @staticmethod
     def traceroute_hop_to_db_model(
@@ -93,7 +121,10 @@ class DataModelsConversor:
     def traceroute_hop_to_hunter_model(
             traceroute_hop_db_model: TracerouteHopDBModel
     ) -> TracerouteHopModel:
-        # TODO
+        return TracerouteHopModel(
+            id=traceroute_hop_db_model.id,
+            hop_position=traceroute_hop_db_model.hop_position,
+        )
         pass
 
     @staticmethod
@@ -106,4 +137,15 @@ class DataModelsConversor:
             ttl=hop_response_model.ttl,
             rtt_ms=hop_response_model.rtt_ms,
             hop_id=hop_id,
+        )
+
+    @staticmethod
+    def hop_response_to_hunter_model(
+            hop_response_db_model: HopResponseDBModel
+    ) -> HopResponseModel:
+        return HopResponseModel(
+            id=hop_response_db_model.id,
+            ip_address=hop_response_db_model.ip_address,
+            ttl=hop_response_db_model.ttl,
+            rtt_ms=hop_response_db_model.rtt_ms,
         )
