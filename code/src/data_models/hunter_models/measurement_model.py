@@ -7,8 +7,6 @@ from datetime import datetime
 # internal imports
 from .base_measurement_result_model import BaseMeasurementResultModel
 
-# from ..database_models.measurement_db_model import MeasurementDBModel
-
 from ...utilities.enums import (
     DefinitionTypeRIPEMeasurementRequest,
     AddressFamilyRIPEMeasurementRequest
@@ -27,4 +25,4 @@ class MeasurementModel(BaseModel):
     target_asn: Optional[int]
     type: DefinitionTypeRIPEMeasurementRequest
 
-    results: Optional[list[BaseMeasurementResultModel]] = None
+    results: list[BaseMeasurementResultModel]

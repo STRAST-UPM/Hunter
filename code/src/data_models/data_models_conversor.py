@@ -36,6 +36,8 @@ class DataModelsConversor:
             status_description=track_db_model.status_description,
             slim=track_db_model.slim,
             ip_address=track_db_model.ip_address,
+            track_results=[],
+            measurements=[]
         )
 
     @staticmethod
@@ -76,6 +78,7 @@ class DataModelsConversor:
             target_asn=measurement_db_model.target_asn,
             type=DefinitionTypeRIPEMeasurementRequest(
                 measurement_db_model.type),
+            results=[]
         )
 
     @staticmethod
@@ -98,13 +101,13 @@ class DataModelsConversor:
             traceroute_db_model: TracerouteDBModel
     ) -> TracerouteModel:
         return TracerouteModel(
-            id=traceroute_db_model.id,
             timestamp=traceroute_db_model.timestamp,
             probe_id=traceroute_db_model.probe_id,
             origin_ip=traceroute_db_model.origin_ip,
             public_origin_ip=traceroute_db_model.public_origin_ip,
             destination_ip=traceroute_db_model.destination_ip,
             destination_name=traceroute_db_model.destination_name,
+            hops=[]
         )
 
     @staticmethod
@@ -122,10 +125,9 @@ class DataModelsConversor:
             traceroute_hop_db_model: TracerouteHopDBModel
     ) -> TracerouteHopModel:
         return TracerouteHopModel(
-            id=traceroute_hop_db_model.id,
             hop_position=traceroute_hop_db_model.hop_position,
+            hop_responses=[]
         )
-        pass
 
     @staticmethod
     def hop_response_to_db_model(
@@ -144,7 +146,6 @@ class DataModelsConversor:
             hop_response_db_model: HopResponseDBModel
     ) -> HopResponseModel:
         return HopResponseModel(
-            id=hop_response_db_model.id,
             ip_address=hop_response_db_model.ip_address,
             ttl=hop_response_db_model.ttl,
             rtt_ms=hop_response_db_model.rtt_ms,

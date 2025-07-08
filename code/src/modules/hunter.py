@@ -60,7 +60,9 @@ class Hunter:
         )
 
         self._update_track_with_all_data()
-
+        # LOG: track model has all the values
+        print("Log from Hunter.track_ip")
+        print("Track with all relationships")
         print(self._track)
 
         if not self._track.slim:
@@ -73,17 +75,17 @@ class Hunter:
             target=self._track.ip_address,
         )
 
-        traceroute_probes = None
+        traceroute_probes = []
         for probe_value in self._probes_values:
-            traceroute_probes = ProbeObjectRipeMeasurementRequestModel(
+            traceroute_probes.append(ProbeObjectRipeMeasurementRequestModel(
                 requested=self._probes_requested,
                 type=self._probes_selection_type,
                 value=probe_value,
-            )
+            ))
 
         return self._ripe_atlas_provider.start_new_measurement(
             definitions=[traceroute_definition],
-            probes=[traceroute_probes],
+            probes=traceroute_probes,
         )
 
     def _save_measurements_description(self, measurement_ids: list[int]):
@@ -112,8 +114,8 @@ class Hunter:
             )
 
             # LOG: data retrieved
-            print("Log from: Hunter._get_traceroute_measurement_results")
-            print(traceroute_results)
+            # print("Log from: Hunter._get_traceroute_measurement_results")
+            # print(traceroute_results)
 
             return traceroute_results
 

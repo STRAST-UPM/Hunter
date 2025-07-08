@@ -133,11 +133,11 @@ class TracksProvider(DatabaseProvider):
 
         for traceroute_hop_db_model in traceroute_db_model.traceroutes_hops:
             traceroute_hop_hunter_model = DataModelsConversor.traceroute_hop_to_hunter_model(
-                traceroute_hop_db_model=traceroute_hop_db_model
+                traceroute_hop_db_model=traceroute_hop_db_model,
             )
 
             for hop_response_db_model in traceroute_hop_db_model.hops_responses:
-                traceroute_hunter_model.hop_responses.append(
+                traceroute_hop_hunter_model.hop_responses.append(
                     DataModelsConversor.hop_response_to_hunter_model(
                         hop_response_db_model=hop_response_db_model
                     )

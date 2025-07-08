@@ -19,5 +19,5 @@ class TrackModel(BaseModel):
     slim: bool
     ip_address: str
 
-    track_results: Optional[list[TrackResultModel]] = None
-    measurements: Optional[list[MeasurementModel]] = None
+    track_results: list[TrackResultModel]
+    measurements: list[MeasurementModel]

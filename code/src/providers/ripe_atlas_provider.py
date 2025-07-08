@@ -61,15 +61,15 @@ class RIPEAtlasProvider:
                     **start_measurement_response.json())
             else:
                 # LOG: error response
-                print("Log reponse error from: RIPEAtlasProvider.start_new_measurement")
+                print("Log from: RIPEAtlasProvider.start_new_measurement")
+                print("Measurement error")
                 print(start_measurement_response.json())
                 measurement_response = RipeMeasurementResponseModel(
                     error=True
                 )
-        # TODO change errors for generals and print object
         except Exception as error:
             # LOG: general exception
-            print("Log exception from: RIPEAtlasProvider.start_new_measurement")
+            print("Exception log from: RIPEAtlasProvider.start_new_measurement")
             print(error)
             measurement_response = RipeMeasurementResponseModel(
                 error=True,
@@ -91,6 +91,7 @@ class RIPEAtlasProvider:
             ).json()
 
             # LOG: response
+            # print("Log from: RIPEAtlasProvider.get_measurement_description")
             # print(json.dumps(measurement_description_response, indent=4))
 
             measurement_description_result = measurement_description_response["results"][0]
@@ -109,6 +110,7 @@ class RIPEAtlasProvider:
                 target_asn=measurement_description_result["target_asn"],
                 type=DefinitionTypeRIPEMeasurementRequest(
                     measurement_description_result["type"]),
+                results=[]
             )
 
             return measurement
@@ -128,7 +130,8 @@ class RIPEAtlasProvider:
                 }
             ).json()
 
-            # LOG: responseresponse
+            # LOG: response
+            # print("Log from: RIPEAtlasProvider.get_measurement_status")
             # print(json.dumps(measurement_description_response, indent=4))
             # print(
             #     MeasurementStatusRIPE(
@@ -157,6 +160,7 @@ class RIPEAtlasProvider:
             ).json()
 
             # LOG: response
+            # print("Log from: RIPEAtlasProvider.get_measurement_expected_number_result")
             # print(json.dumps(measurement_description_response, indent=4))
             # print(
             #     MeasurementStatusRIPE(
@@ -183,6 +187,7 @@ class RIPEAtlasProvider:
             ).json()
 
             # LOG: response
+            # print("Log from: RIPEAtlasProvider.get_measurement_type")
             # print(json.dumps(measurement_description_response, indent=4))
             # print(
             #     MeasurementStatusRIPE(
@@ -236,8 +241,9 @@ class RIPEAtlasProvider:
                 )
 
                 # LOG: response
-                print("Response log of get_measurements_results")
-                print(json.dumps(measurement_results_response, indent=4))
+                # print("Log from: RIPEAtlasProvider.get_measurement_results")
+                # print("Response log of get_measurements_results")
+                # print(json.dumps(measurement_results_response, indent=4))
 
             match measurement_type:
                 case DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
@@ -257,8 +263,9 @@ class RIPEAtlasProvider:
         traceroute_results = []
 
         # LOG: results retrieved
-        print(f"Number of results: {len(measurement_results)}")
-        print(json.dumps(measurement_results, indent=4))
+        # print("Log from: RIPEAtlasProvider.parse_measurement_traceroute_result")
+        # print(f"Number of results: {len(measurement_results)}")
+        # print(json.dumps(measurement_results, indent=4))
 
         if len(measurement_results) == 0:
             return traceroute_results
@@ -268,7 +275,6 @@ class RIPEAtlasProvider:
         for traceroute_result in measurement_results:
             traceroute_results.append(
                 TracerouteModel(
-                    id=0,
                     timestamp=traceroute_result["timestamp"],
                     probe_id=traceroute_result["prb_id"],
                     origin_ip=traceroute_result["src_addr"],
@@ -276,10 +282,8 @@ class RIPEAtlasProvider:
                     destination_ip=traceroute_result["dst_addr"],
                     destination_name=traceroute_result["dst_name"],
                     hops=[TracerouteHopModel(
-                        id=0,
                         hop_position=traceroute_hop_result["hop"],
                         hop_responses= [HopResponseModel(
-                            id=0,
                             ip_address=hop_response["from"] if "from" in hop_response.keys() else "*",
                             ttl=hop_response["ttl"] if "ttl" in hop_response.keys() else 0,
                             rtt_ms=hop_response["rtt"] if "rtt" in hop_response.keys() else 0,

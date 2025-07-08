@@ -5,7 +5,6 @@ from datetime import datetime
 # internal imports
 
 class BaseMeasurementResultModel(BaseModel):
-    id: int
     timestamp: datetime
     probe_id: int
     origin_ip: str
