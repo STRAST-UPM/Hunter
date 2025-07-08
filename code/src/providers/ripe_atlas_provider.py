@@ -293,3 +293,16 @@ class RIPEAtlasProvider:
             )
 
         return traceroute_results
+
+    def get_probe_location_info(self, probe_id: int) -> (str, float, float):
+        """
+
+        :param probe_id: id of the probe we want the info
+        :return: (country_code, latitude, longitude)
+        """
+
+        country_code = ""
+        latitude = 0.0
+        longitude = 0.0
+
+        return country_code, latitude, longitude

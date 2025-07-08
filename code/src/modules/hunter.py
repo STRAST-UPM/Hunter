@@ -2,10 +2,15 @@
 import asyncio
 import json
 
+from sqlalchemy.orm.unitofwork import track_cascade_events
+
+from ..data_models.hunter_models.hop_response_model import HopResponseModel
+from ..data_models.hunter_models.traceroute_hop_model import TracerouteHopModel
 # internal imports
 from ..data_models.hunter_models.track_model import TrackModel
 from ..data_models.hunter_models.measurement_model import MeasurementModel
 from ..data_models.hunter_models.traceroute_model import TracerouteModel
+from ..data_models.hunter_models.track_result_model import TrackResultModel
 
 from ..data_models.ripe_models.traceroute_definition_ripe_measurement_request_model import \
     TracerouteDefinitionRIPEMeasurementRequestModel
@@ -15,6 +20,7 @@ from ..data_models.ripe_models.ripe_measurement_response_model import RipeMeasur
 from ..providers.ripe_atlas_provider import RIPEAtlasProvider
 from ..providers.tracks_provider import TracksProvider
 from ..providers.measurements_provider import MeasurementsProvider
+from ..providers.ip_information_provider import IPInformationProvider
 
 from ..utilities.enums import (
     ProbeObjectTypeRIPEMeasurementRequest,
@@ -43,8 +49,10 @@ class Hunter:
         self._ripe_atlas_provider: RIPEAtlasProvider = RIPEAtlasProvider(api_key)
         self._tracks_provider: TracksProvider = TracksProvider()
         self._measurements_provider: MeasurementsProvider = MeasurementsProvider()
+        self._ip_information_provider: IPInformationProvider = IPInformationProvider()
 
     async def track_ip(self):
+        # Obtain the measurements
         traceroute_start_measurement_response = self._start_traceroute_measurement()
 
         if traceroute_start_measurement_response.error:
@@ -61,13 +69,17 @@ class Hunter:
 
         self._update_track_with_all_data()
         # LOG: track model has all the values
-        print("Log from Hunter.track_ip")
-        print("Track with all relationships")
-        print(self._track)
+        # print("Log from Hunter.track_ip")
+        # print("Track with all relationships")
+        # print(self._track)
 
         if not self._track.slim:
             # TODO make ping phase
             pass
+
+        # Compute the measurements with Hunter algorithm
+
+
 
     def _start_traceroute_measurement(self) -> RipeMeasurementResponseModel:
         traceroute_definition = TracerouteDefinitionRIPEMeasurementRequestModel(
@@ -146,3 +158,90 @@ class Hunter:
     def _get_ping_measurement_results(self):
         # TODO
         pass
+
+    def _compute_traceroute_result(self, traceroute_result: TracerouteModel) -> list[TrackResultModel]:
+        if not self._is_target_hop_valid(traceroute_result):
+            return []
+
+        if not self._is_last_hop_valid(traceroute_result):
+            return []
+
+        try:
+            last_hop_responses = traceroute_result.hops[-2].hop_responses
+        except IndexError as e:
+            print("Error log from: Hunter._compute_traceroute_result")
+            print(e)
+            return None
+
+        probe_country_code, probe_latitude, probe_longitude = (
+            self._ripe_atlas_provider.get_probe_location_info(traceroute_result.probe_id)
+        )
+
+        last_hop_ips = set([
+            hop_response.ip_address
+            for hop_response in last_hop_responses
+            if hop_response.ip_address != "*"
+        ])
+
+        track_results = []
+
+        for ip_address in last_hop_ips:
+            (last_hop_ip_country_code, last_hop_ip_city_name,
+             last_hop_ip_latitude, last_hop_ip_longitude) = (
+                self._ip_information_provider.locate_unicast_ip(ip_address)
+            )
+
+            track_results.append(
+                TrackResultModel(
+                    origin_country = probe_country_code,
+                    origin_latitude = probe_latitude,
+                    origin_longitude = probe_longitude,
+                    destination_country = last_hop_ip_country_code,
+                    destination_city = last_hop_ip_city_name,
+                    destination_latitude = last_hop_ip_latitude,
+                    destination_longitude = last_hop_ip_longitude,
+                    intersection_area_polygon ="",
+                    airports_in_intersection=[],
+                )
+            )
+
+
+    def _is_target_hop_valid(self, traceroute_result: TracerouteModel) -> bool:
+        try:
+            target_hop_responses = traceroute_result.hops[-1].hop_responses
+        except IndexError as e:
+            print("Error log from: Hunter._compute_traceroute_result")
+            print(e)
+            return False
+
+        target_hop_ips = set([
+            hop_response.ip_address
+            for hop_response in target_hop_responses
+            if hop_response.ip_address != "*"
+        ])
+
+        # Check if target hop ips are all the same
+        if len(target_hop_ips) == 1:
+            return True
+
+        return False
+
+    def _is_last_hop_valid(self, traceroute_result: TracerouteModel):
+        try:
+            last_hop_responses = traceroute_result.hops[-1].hop_responses
+        except IndexError as e:
+            print("Error log from: Hunter._compute_traceroute_result")
+            print(e)
+            return False
+
+        last_hop_ips = set([
+            hop_response.ip_address
+            for hop_response in last_hop_responses
+            if hop_response.ip_address != "*"
+        ])
+
+        # Check if there are some clear IPs in last hop
+        if len(last_hop_ips) > 0:
+            return True
+
+        return False

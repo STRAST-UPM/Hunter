@@ -7,7 +7,6 @@ from .airport_model import AirportModel
 
 
 class TrackResultModel(BaseModel):
-    id: int
     origin_country: str
     origin_latitude: float
     origin_longitude: float
