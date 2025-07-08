@@ -1,5 +1,5 @@
 # external imports
-from typing import Optional
+from typing import Optional, Type
 
 from pydantic import BaseModel
 from datetime import datetime
@@ -25,4 +25,4 @@ class MeasurementModel(BaseModel):
     target_asn: Optional[int]
     type: DefinitionTypeRIPEMeasurementRequest
 
-    results: list[BaseMeasurementResultModel]
+    results: list[Type[BaseMeasurementResultModel]]

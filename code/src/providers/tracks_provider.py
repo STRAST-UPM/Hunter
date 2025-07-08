@@ -22,7 +22,9 @@ from ..utilities.enums import (
     TrackStatus, DefinitionTypeRIPEMeasurementRequest
 )
 from ..utilities.constants import (
-    TRACK_STATUS_IN_PROGRESS_DESCRIPTION
+    TRACK_STATUS_IN_PROGRESS_DESCRIPTION,
+    TRACK_STATUS_ERROR_DESCRIPTION,
+    TRACK_STATUS_FINISHED_DESCRIPTION
 )
 
 
@@ -59,6 +61,13 @@ class TracksProvider(DatabaseProvider):
     def mark_track_with_error(self, track_id: int):
         track_db = self.get_by_id(model_class=TrackDBModel, obj_id=track_id)
         track_db.status = TrackStatus.ERROR.value
+        track_db.status_description = TRACK_STATUS_ERROR_DESCRIPTION
+        self.update(track_db)
+
+    def mark_track_as_finished(self, track_id: int):
+        track_db = self.get_by_id(model_class=TrackDBModel, obj_id=track_id)
+        track_db.status = TrackStatus.FINISHED.value
+        track_db.status_description = TRACK_STATUS_FINISHED_DESCRIPTION
         self.update(track_db)
 
     def get_track_with_relations(self, track_id: int) -> Optional[TrackModel]:
@@ -71,60 +80,59 @@ class TracksProvider(DatabaseProvider):
         Returns:
             TrackModel with all the relations or None if not found
         """
-        # try:
-        with self.get_session() as session:
-            track_db = session.query(TrackDBModel).options(
-                # load tracks results
-                selectinload(TrackDBModel.tracks_results),
-                # load traceroute measurements
-                selectinload(TrackDBModel.measurements)
-                .selectinload(MeasurementDBModel.traceroutes)
-                .selectinload(TracerouteDBModel.traceroutes_hops)
-                .selectinload(TracerouteHopDBModel.hops_responses),
-                #load ping measurements
-                selectinload(TrackDBModel.measurements)
-                .selectinload(MeasurementDBModel.pings)
-            ).filter(TrackDBModel.id == track_id).first()
+        try:
+            with self.get_session() as session:
+                track_db = session.query(TrackDBModel).options(
+                    # load tracks results
+                    selectinload(TrackDBModel.tracks_results),
+                    # load traceroute measurements
+                    selectinload(TrackDBModel.measurements)
+                    .selectinload(MeasurementDBModel.traceroutes)
+                    .selectinload(TracerouteDBModel.traceroutes_hops)
+                    .selectinload(TracerouteHopDBModel.hops_responses),
+                    #load ping measurements
+                    selectinload(TrackDBModel.measurements)
+                    .selectinload(MeasurementDBModel.pings)
+                ).filter(TrackDBModel.id == track_id).first()
 
-            if track_db:
-                # Convert to TrackModel
-                # Basic attributes parsing
-                track_model = DataModelsConversor.track_to_hunter_model(
-                    track_db_model=track_db
-                )
-
-                # track results parsing
-                # TODO
-
-                # measurements parsing
-                for measurement_db_model in track_db.measurements:
-                    measurement = DataModelsConversor.measurement_to_hunter_model(
-                        measurement_db_model=measurement_db_model
+                if track_db:
+                    # Convert to TrackModel
+                    # Basic attributes parsing
+                    track_model = DataModelsConversor.track_to_hunter_model(
+                        track_db_model=track_db
                     )
 
-                    # ping parsing
-                    if measurement.type == DefinitionTypeRIPEMeasurementRequest.PING:
-                        # TODO
-                        pass
+                    # track results parsing
+                    # TODO
 
-                    # traceroute parsing
-                    if measurement.type == DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
-                        for traceroute_db_model in measurement_db_model.traceroutes:
-                            traceroute_hunter_model = self.parsing_traceroute_with_all_relations(
-                                traceroute_db_model=traceroute_db_model,
-                            )
+                    # measurements parsing
+                    for measurement_db_model in track_db.measurements:
+                        measurement = DataModelsConversor.measurement_to_hunter_model(
+                            measurement_db_model=measurement_db_model
+                        )
 
-                            measurement.results.append(traceroute_hunter_model)
+                        # ping parsing
+                        if measurement.type == DefinitionTypeRIPEMeasurementRequest.PING:
+                            # TODO
+                            pass
 
-                    track_model.measurements.append(measurement)
+                        # traceroute parsing
+                        if measurement.type == DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
+                            for traceroute_db_model in measurement_db_model.traceroutes:
+                                traceroute_hunter_model = self.parsing_traceroute_with_all_relations(
+                                    traceroute_db_model=traceroute_db_model,
+                                )
 
-                return track_model
+                                measurement.results.append(traceroute_hunter_model)
 
+                        track_model.measurements.append(measurement)
+
+                    return track_model
+
+                return None
+        except Exception as e:
+            print(f"Error getting track with relations for ID {track_id}: {e}")
             return None
-
-        # except Exception as e:
-        #     print(f"Error getting track with relations for ID {track_id}: {e}")
-        #     return None
 
     def parsing_traceroute_with_all_relations(self, traceroute_db_model: TracerouteDBModel) -> TracerouteModel:
         traceroute_hunter_model = DataModelsConversor.traceroute_to_hunter_model(

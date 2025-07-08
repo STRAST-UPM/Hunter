@@ -219,7 +219,7 @@ class RIPEAtlasProvider:
             measurement_not_ongoing = False
 
             while (not enough_measurements) or (not measurement_not_ongoing):
-                print("Waiting 30 seconds for proper results...")
+                print(f"Waiting 30 seconds for proper results of measurement {measurement_id}")
                 sleep(30)
 
                 measurement_results_response = requests.get(

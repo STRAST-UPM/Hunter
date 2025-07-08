@@ -1,5 +1,6 @@
 # external imports
 import asyncio
+import json
 
 # internal imports
 from ..data_models.api_models.track_request_model import TrackRequestModel
@@ -32,3 +33,8 @@ class TrackRequestsManager:
         asyncio.create_task(hunter.track_ip())
 
         return TrackStartResponseModel(track_id=track.id)
+
+    def get_track_data(self, track_id: int):
+        return self._tracks_provider.get_track_with_relations(
+            track_id=track_id
+        ).model_dump()
