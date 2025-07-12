@@ -171,7 +171,7 @@ class Hunter:
         except IndexError as e:
             print("Error log from: Hunter._compute_traceroute_result")
             print(e)
-            return None
+            return []
 
         probe_country_code, probe_latitude, probe_longitude = (
             self._ripe_atlas_provider.get_probe_location_info(traceroute_result.probe_id)
@@ -204,7 +204,6 @@ class Hunter:
                     airports_in_intersection=[],
                 )
             )
-
 
     def _is_target_hop_valid(self, traceroute_result: TracerouteModel) -> bool:
         try:

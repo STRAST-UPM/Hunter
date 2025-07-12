@@ -1,15 +1,28 @@
 services:
-  #hunter:
-  #  build:
-  #    context: .
-  #    dockerfile: Dockerfile
-  #  image:
-  #    ghcr.io/strast-upm/hunter
-  #  container_name: hunter
-  #  ports:
-  #    - "80:8000"
-  #  networks:
-  #    - main_network
+  hunter:
+    image:
+      ghcr.io/strast-upm/hunter
+    container_name: hunter
+    environment:
+      IPINFO_CACHE_HOST: ipinfo_cache
+      DATABASE_HOST: postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - main_network
+
+  ipinfo_cache:
+    image: ghcr.io/strast-upm/ipinfo_cache
+    container_name: ipinfo_cache
+    ports:
+      - "5000:5000"
+    environment:
+      IPINFO_TOKEN: ${IPINFO_TOKEN}
+    volumes:
+      - ipinfo_cache_data:/db
+    networks:
+      - main_network
+    restart: unless-stopped
 
   pgadmin:
     image: dpage/pgadmin4
@@ -17,8 +30,8 @@ services:
     ports:
       - "8080:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: user@email.com
-      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL]
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD]
     volumes:
       - postgres_admin_volume:/var/lib/pgadmin
     networks:
@@ -31,8 +44,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -42,6 +55,7 @@ services:
 volumes:
   postgres_admin_volume:
   postgres_data:
+  ipinfo_cache_data:
 
 networks:
   main_network:

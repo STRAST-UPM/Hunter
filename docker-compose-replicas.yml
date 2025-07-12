@@ -1,0 +1,154 @@
+services:
+  # hunter replication
+  hunter_1:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_1
+    ports:
+      - "8000:8000"
+    environment:
+      IPINFO_CACHE_HOST: ipinfo_cache
+      DATABASE_HOST: postgres
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_2:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_2
+    ports:
+      - "8001:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_3:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_3
+    ports:
+      - "8002:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_4:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_4
+    ports:
+      - "8003:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_5:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_5
+    ports:
+      - "8004:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_6:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_6
+    ports:
+      - "8005:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_7:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_7
+    ports:
+      - "8006:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_8:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_8
+    ports:
+      - "8007:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_9:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_9
+    ports:
+      - "8008:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_10:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_10
+    ports:
+      - "8009:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  hunter_11:
+    image: ghcr.io/strast-upm/hunter
+    container_name: hunter_11
+    ports:
+      - "8010:8000"
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  # Common services
+  ipinfo_cache:
+    image: ghcr.io/strast-upm/ipinfo_cache
+    container_name: ipinfo_cache
+    ports:
+      - "5000:5000"
+    environment:
+      IPINFO_TOKEN: ${IPINFO_TOKEN}
+    volumes:
+      - ipinfo_cache_data:/db
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: postgresql_admin
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL]
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD]
+    volumes:
+      - postgres_admin_volume:/var/lib/pgadmin
+    networks:
+      - main_network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - main_network
+    restart: unless-stopped
+
+volumes:
+  postgres_admin_volume:
+  postgres_data:
+  ipinfo_cache_data:
+
+networks:
+  main_network:
+    driver: bridge
