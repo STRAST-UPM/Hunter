@@ -1,5 +1,6 @@
 # external imports
 from time import sleep
+import asyncio
 import requests
 import json
 
@@ -20,8 +21,10 @@ from ..utilities.enums import (
     MeasurementStatusRIPE
 )
 from ..utilities.constants import (
+    RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS,
     RIPE_ATLAS_MEASUREMENTS_URL,
     RIPE_ATLAS_MEASUREMENTS_RESULTS_URL,
+    RIPE_ATLAS_PROBES_URL
 )
 
 class RIPEAtlasProvider:
@@ -64,8 +67,13 @@ class RIPEAtlasProvider:
                 print("Log from: RIPEAtlasProvider.start_new_measurement")
                 print("Measurement error")
                 print(start_measurement_response.json())
+                errors_descriptions = [
+                    error["detail"]
+                    for error in start_measurement_response.json()["error"]["errors"]
+                ]
                 measurement_response = RipeMeasurementResponseModel(
-                    error=True
+                    error=True,
+                    error_description=errors_descriptions.__str__()
                 )
         except Exception as error:
             # LOG: general exception
@@ -73,6 +81,7 @@ class RIPEAtlasProvider:
             print(error)
             measurement_response = RipeMeasurementResponseModel(
                 error=True,
+                error_description="Error parsing the message"
             )
 
         return measurement_response
@@ -203,7 +212,7 @@ class RIPEAtlasProvider:
             print(error)
             return None
 
-    def get_measurement_results(
+    async def get_measurement_results(
             self,
             measurement_id: int,
             measurement_type: DefinitionTypeRIPEMeasurementRequest) \
@@ -219,8 +228,9 @@ class RIPEAtlasProvider:
             measurement_not_ongoing = False
 
             while (not enough_measurements) or (not measurement_not_ongoing):
-                print(f"Waiting 30 seconds for proper results of measurement {measurement_id}")
-                sleep(30)
+                print(f"Waiting {RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS} "
+                      f"seconds for proper results of measurement {measurement_id}")
+                await asyncio.sleep(RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS)
 
                 measurement_results_response = requests.get(
                     url=RIPE_ATLAS_MEASUREMENTS_RESULTS_URL.format(
@@ -301,10 +311,20 @@ class RIPEAtlasProvider:
         :return: (country_code, latitude, longitude)
         """
 
-        # TODO
-
         country_code = ""
         latitude = 0.0
         longitude = 0.0
+
+        try:
+            probe_info = requests.get(
+                url=f"{RIPE_ATLAS_PROBES_URL}/{probe_id}"
+            ).json()
+
+            country_code = probe_info["country_code"]
+            latitude = probe_info["geometry"]["coordinates"][1]
+            longitude = probe_info["geometry"]["coordinates"][0]
+
+        except Exception as e:
+            pass
 
         return country_code, latitude, longitude

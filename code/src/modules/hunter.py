@@ -1,11 +1,5 @@
 # external imports
-import asyncio
-import json
 
-from sqlalchemy.orm.unitofwork import track_cascade_events
-
-from ..data_models.hunter_models.hop_response_model import HopResponseModel
-from ..data_models.hunter_models.traceroute_hop_model import TracerouteHopModel
 # internal imports
 from ..data_models.hunter_models.track_model import TrackModel
 from ..data_models.hunter_models.measurement_model import MeasurementModel
@@ -56,14 +50,17 @@ class Hunter:
         traceroute_start_measurement_response = self._start_traceroute_measurement()
 
         if traceroute_start_measurement_response.error:
-            self._tracks_provider.mark_track_with_error(track_id=self._track.id)
+            self._tracks_provider.mark_track_with_error(
+                track_id=self._track.id,
+                error_msg=traceroute_start_measurement_response.error_description,
+            )
             return
 
         self._save_measurements_description(
             measurement_ids=traceroute_start_measurement_response.measurement
         )
 
-        self._store_traceroute_measurement_results(
+        await self._store_traceroute_measurement_results(
             measurement_ids=traceroute_start_measurement_response.measurement
         )
 
@@ -78,8 +75,30 @@ class Hunter:
             pass
 
         # Compute the measurements with Hunter algorithm
+        track_results: list[TrackResultModel] = []
+        for measurement in self._track.measurements:
+            print(measurement.type)
+            print(len(measurement.results))
+            if measurement.type != DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
+                continue
+            for traceroute in measurement.results:
+                # TODO correct warning
+                partial_track_results = self._compute_traceroute_result(traceroute)
+                print(f"Tamaño resultados parciales: {len(partial_track_results)}")
+                if partial_track_results is not None:
+                    track_results.extend(partial_track_results)
 
+        # Save all track results
+        for track_result in track_results:
+            print("Guardando track_result")
+            print(track_result)
+            self._tracks_provider.save_track_result(
+                track_result=track_result,
+                track_id=self._track.id,
+            )
 
+        # Mark as finished the hunt
+        self._tracks_provider.mark_track_as_finished(track_id=self._track.id)
 
     def _start_traceroute_measurement(self) -> RipeMeasurementResponseModel:
         traceroute_definition = TracerouteDefinitionRIPEMeasurementRequestModel(
@@ -109,9 +128,9 @@ class Hunter:
                     track_id=self._track.id
                 )
 
-    def _store_traceroute_measurement_results(self, measurement_ids: list[int]):
+    async def _store_traceroute_measurement_results(self, measurement_ids: list[int]):
         for measurement_id in measurement_ids:
-            traceroute_results = self._get_traceroute_measurement_results(
+            traceroute_results = await self._get_traceroute_measurement_results(
                 measurement_id=measurement_id
             )
             self._save_traceroute_results(
@@ -119,8 +138,8 @@ class Hunter:
                 measurement_id=measurement_id
             )
 
-    def _get_traceroute_measurement_results(self, measurement_id: int) -> list[TracerouteModel]:
-            traceroute_results = self._ripe_atlas_provider.get_measurement_results(
+    async def _get_traceroute_measurement_results(self, measurement_id: int) -> list[TracerouteModel]:
+            traceroute_results = await self._ripe_atlas_provider.get_measurement_results(
                 measurement_id=measurement_id,
                 measurement_type=DefinitionTypeRIPEMeasurementRequest.TRACEROUTE
             )
@@ -143,8 +162,8 @@ class Hunter:
             )
 
         # LOG: save traceroute measurement results
-        print("Log from: Hunter._save_traceroute_results")
-        print("Traceroute results saved in DB")
+        # print("Log from: Hunter._save_traceroute_results")
+        # print("Traceroute results saved in DB")
 
     def _update_track_with_all_data(self):
         self._track = self._tracks_provider.get_track_with_relations(
@@ -159,22 +178,26 @@ class Hunter:
         # TODO
         pass
 
-    def _compute_traceroute_result(self, traceroute_result: TracerouteModel) -> list[TrackResultModel]:
-        if not self._is_target_hop_valid(traceroute_result):
+    def _compute_traceroute_result(self, traceroute: TracerouteModel) -> list[TrackResultModel]:
+        if not self._is_target_hop_valid(traceroute):
+            print("Log from: Hunter._compute_traceroute_result")
+            print("Target hop is not valid")
             return []
 
-        if not self._is_last_hop_valid(traceroute_result):
+        if not self._is_last_hop_valid(traceroute):
+            print("Log from: Hunter._compute_traceroute_result")
+            print("Last hop is not valid")
             return []
 
         try:
-            last_hop_responses = traceroute_result.hops[-2].hop_responses
+            last_hop_responses = traceroute.hops[-2].hop_responses
         except IndexError as e:
             print("Error log from: Hunter._compute_traceroute_result")
             print(e)
             return []
 
         probe_country_code, probe_latitude, probe_longitude = (
-            self._ripe_atlas_provider.get_probe_location_info(traceroute_result.probe_id)
+            self._ripe_atlas_provider.get_probe_location_info(traceroute.probe_id)
         )
 
         last_hop_ips = set([
@@ -182,6 +205,9 @@ class Hunter:
             for hop_response in last_hop_responses
             if hop_response.ip_address != "*"
         ])
+        print("Log from: Hunter._compute_traceroute_result")
+        print(f"IPs in last hop: {last_hop_ips}")
+
 
         track_results = []
 
@@ -204,6 +230,8 @@ class Hunter:
                     airports_in_intersection=[],
                 )
             )
+
+        return track_results
 
     def _is_target_hop_valid(self, traceroute_result: TracerouteModel) -> bool:
         try:

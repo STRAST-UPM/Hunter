@@ -1,10 +1,10 @@
 # external imports
 import asyncio
-import json
 
 # internal imports
 from ..data_models.api_models.track_request_model import TrackRequestModel
 from ..data_models.api_models.track_start_response_model import TrackStartResponseModel
+from ..data_models.hunter_models.track_result_model import TrackResultModel
 
 from ..providers.tracks_provider import TracksProvider
 
@@ -35,6 +35,15 @@ class TrackRequestsManager:
         return TrackStartResponseModel(track_id=track.id)
 
     def get_track_data(self, track_id: int):
-        return self._tracks_provider.get_track_with_relations(
+        track = self._tracks_provider.get_track_with_relations(
             track_id=track_id
-        ).model_dump()
+        )
+
+        return track.model_dump() if track else None
+
+    def get_track_results(self, track_id: int) -> list[TrackResultModel]:
+        track = self._tracks_provider.get_track_with_relations(
+            track_id=track_id
+        )
+
+        return track.track_results if track else None

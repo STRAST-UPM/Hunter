@@ -10,13 +10,12 @@ from .ip_address_provider import IPAddressProvider
 from ..data_models.data_models_conversor import DataModelsConversor
 from ..data_models.hunter_models.track_model import TrackModel
 from ..data_models.hunter_models.traceroute_model import TracerouteModel
+from ..data_models.hunter_models.track_result_model import TrackResultModel
 from ..data_models.database_models import (
     TrackDBModel,
     MeasurementDBModel,
     TracerouteDBModel,
     TracerouteHopDBModel,
-    HopResponseDBModel,
-    PingDBModel
 )
 from ..utilities.enums import (
     TrackStatus, DefinitionTypeRIPEMeasurementRequest
@@ -58,10 +57,10 @@ class TracksProvider(DatabaseProvider):
 
         return DataModelsConversor.track_to_hunter_model(track_added)
 
-    def mark_track_with_error(self, track_id: int):
+    def mark_track_with_error(self, track_id: int, error_msg: str = TRACK_STATUS_ERROR_DESCRIPTION):
         track_db = self.get_by_id(model_class=TrackDBModel, obj_id=track_id)
         track_db.status = TrackStatus.ERROR.value
-        track_db.status_description = TRACK_STATUS_ERROR_DESCRIPTION
+        track_db.status_description = error_msg
         self.update(track_db)
 
     def mark_track_as_finished(self, track_id: int):
@@ -70,16 +69,21 @@ class TracksProvider(DatabaseProvider):
         track_db.status_description = TRACK_STATUS_FINISHED_DESCRIPTION
         self.update(track_db)
 
+    def save_track_result(self, track_result: TrackResultModel, track_id: int):
+        track_result_db_model = DataModelsConversor.track_result_to_db_model(
+            track_result_model=track_result,
+            track_id=track_id
+        )
+        self.add(track_result_db_model)
+
     def get_track_with_relations(self, track_id: int) -> Optional[TrackModel]:
         """
         Obtains a track with all its relations charged as a TrackModel
 
-        Args:
-            track_id: ID of the track to search
-
-        Returns:
-            TrackModel with all the relations or None if not found
+        :param track_id: ID of the track to search
+        :return: TrackModel with all the relations or None if not found
         """
+
         try:
             with self.get_session() as session:
                 track_db = session.query(TrackDBModel).options(
@@ -103,30 +107,37 @@ class TracksProvider(DatabaseProvider):
                     )
 
                     # track results parsing
-                    # TODO
+                    if track_db.tracks_results is not None:
+                        for track_db_result in track_db.tracks_results:
+                            track_model.track_results.append(
+                                DataModelsConversor.track_result_to_hunter_model(
+                                    track_result_db_model=track_db_result,
+                                )
+                            )
 
                     # measurements parsing
-                    for measurement_db_model in track_db.measurements:
-                        measurement = DataModelsConversor.measurement_to_hunter_model(
-                            measurement_db_model=measurement_db_model
-                        )
+                    if track_db.measurements is not None:
+                        for measurement_db_model in track_db.measurements:
+                            measurement = DataModelsConversor.measurement_to_hunter_model(
+                                measurement_db_model=measurement_db_model
+                            )
 
-                        # ping parsing
-                        if measurement.type == DefinitionTypeRIPEMeasurementRequest.PING:
-                            # TODO
-                            pass
+                            # ping parsing
+                            if measurement.type == DefinitionTypeRIPEMeasurementRequest.PING:
+                                # TODO
+                                pass
 
-                        # traceroute parsing
-                        if measurement.type == DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
-                            for traceroute_db_model in measurement_db_model.traceroutes:
-                                traceroute_hunter_model = self.parsing_traceroute_with_all_relations(
-                                    traceroute_db_model=traceroute_db_model,
-                                )
+                            # traceroute parsing
+                            if measurement.type == DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
+                                for traceroute_db_model in measurement_db_model.traceroutes:
+                                    traceroute_hunter_model = self.parsing_traceroute_with_all_relations(
+                                        traceroute_db_model=traceroute_db_model,
+                                    )
 
-                                # TODO correct warning
-                                measurement.results.append(traceroute_hunter_model)
+                                    # TODO correct warning
+                                    measurement.results.append(traceroute_hunter_model)
 
-                        track_model.measurements.append(measurement)
+                            track_model.measurements.append(measurement)
 
                     return track_model
 

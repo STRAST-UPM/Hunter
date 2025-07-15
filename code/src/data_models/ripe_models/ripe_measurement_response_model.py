@@ -7,3 +7,4 @@ from typing import Optional
 class RipeMeasurementResponseModel(BaseModel):
     measurement: Optional[list[int]] = Field(alias="measurements", default=None)
     error: bool = False
+    error_description: Optional[str] = None

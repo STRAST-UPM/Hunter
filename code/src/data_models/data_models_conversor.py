@@ -27,8 +27,8 @@ from ..utilities.enums import (
 
 
 class DataModelsConversor:
-    @classmethod
-    def track_to_hunter_model(cls, track_db_model: TrackDBModel) -> TrackModel:
+    @staticmethod
+    def track_to_hunter_model(track_db_model: TrackDBModel) -> TrackModel:
         return TrackModel(
             id=track_db_model.id,
             timestamp=track_db_model.timestamp,
@@ -38,6 +38,37 @@ class DataModelsConversor:
             ip_address=track_db_model.ip_address,
             track_results=[],
             measurements=[]
+        )
+
+    @staticmethod
+    def track_result_to_db_model(
+            track_result_model: TrackResultModel,
+            track_id: int
+    ) -> TrackResultDBModel:
+        return TrackResultDBModel(
+            origin_country = track_result_model.origin_country,
+            origin_latitude = track_result_model.origin_latitude,
+            origin_longitude = track_result_model.origin_longitude,
+            destination_country = track_result_model.destination_country,
+            destination_city = track_result_model.destination_city,
+            destination_latitude = track_result_model.destination_latitude,
+            destination_longitude = track_result_model.destination_longitude,
+            intersection_area_polygon = track_result_model.intersection_area_polygon,
+            track_id = track_id,
+        )
+
+    @staticmethod
+    def track_result_to_hunter_model(track_result_db_model: TrackResultDBModel) -> TrackResultModel:
+        return TrackResultModel(
+            origin_country = track_result_db_model.origin_country,
+            origin_latitude = track_result_db_model.origin_latitude,
+            origin_longitude = track_result_db_model.origin_longitude,
+            destination_country = track_result_db_model.destination_country,
+            destination_city = track_result_db_model.destination_city,
+            destination_latitude = track_result_db_model.destination_latitude,
+            destination_longitude = track_result_db_model.destination_longitude,
+            intersection_area_polygon = track_result_db_model.intersection_area_polygon,
+            airports_in_intersection=[]
         )
 
     @staticmethod

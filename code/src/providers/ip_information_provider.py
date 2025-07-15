@@ -1,6 +1,6 @@
 # external imports
 import json
-
+import ipaddress
 import requests
 import ipinfo
 from os import getenv
@@ -15,23 +15,30 @@ class IPInformationProvider:
     def __init__(self):
         self._ipinfo_api_key: str = getenv("IPINFO_TOKEN")
 
-    def locate_unicast_ip(self, ip_address: str) -> (str, str, float, float):
+    def locate_unicast_ip(self, ip_address: str) -> [(str, str, float, float), None]:
         """
 
         :param ip_address: ip address to locate
         :return: (country_code: str, city_name: str, latitude: float, longitude: float)
         """
 
-        # TODO
+        if self.is_bogon(ip_address):
+            return None
 
-        country_code = "country_code"
-        city_name = "city_name"
-        latitude = 0.0
-        longitude = 0.0
+        ip_location = self.locate_unicast_with_cached_ipinfo(
+            ip_address=ip_address,
+        )
 
-        return country_code, city_name, latitude, longitude
+        if ip_location is None:
+            print("Log from: IPInformationProvider.locate_unicast_ip")
+            print("Private IPInfo request needed")
+            ip_location = self.locate_unicast_with_ipinfo(
+                ip_address=ip_address,
+            )
 
-    def locate_unicast_with_ipinfo(self, ip_address: str) -> (str, str, float, float):
+        return ip_location
+
+    def locate_unicast_with_ipinfo(self, ip_address: str) -> [(str, str, float, float), None]:
         """
 
         :param ip_address: ip address to locate
@@ -42,18 +49,25 @@ class IPInformationProvider:
         try:
             handler = ipinfo.getHandler(self._ipinfo_api_key)
             details = handler.getDetails(ip_address)
+
+            try:
+                if details.bogon:
+                    return None
+            except Exception as e:
+                pass
+
             return details.country, details.city, details.latitude, details.longitude
         except Exception as e:
             print("Exception from IPInformationProvider.locate_unicast_with_ipinfo")
             print(e)
-            return "", "", 0, 0
+            return None
 
-    def locate_unicast_with_cached_ipinfo(self, ip_address: str) -> (str, str, float, float):
+    def locate_unicast_with_cached_ipinfo(self, ip_address: str) -> [(str, str, float, float), None]:
         """
 
         :param ip_address: ip address to locate
         :return: (country_code: str, city_name: str, latitude: float, longitude: float)
-        If an error occurs, return ("", "", 0, 0)
+        If an error occurs, return None
         """
 
         try:
@@ -63,10 +77,26 @@ class IPInformationProvider:
             ip_address_details = json.loads(ip_address_details_str)
 
             if ("bogon" in ip_address_details.keys()) and (ip_address_details["bogon"]):
-                return "", "", 0, 0
+                return None
 
             return ip_address_details["country"], ip_address_details["city"], ip_address_details["latitude"], ip_address_details["longitude"]
         except Exception as e:
             print("Exception from IPInformationProvider.locate_unicast_with_cached_ipinfo")
             print(e)
-            return "", "", 0, 0
+            return None
+
+    def is_anycast_service_check(self, ip_address: str) -> bool:
+        # TODO
+        return True
+
+    def is_bogon(self, ip_address: str) -> bool:
+        try:
+            ip = ipaddress.ip_address(ip_address)
+            return (ip.is_private or
+                    ip.is_reserved or
+                    ip.is_loopback or
+                    ip.is_link_local or
+                    ip.is_multicast or
+                    ip.is_unspecified)
+        except ValueError:
+            return False
