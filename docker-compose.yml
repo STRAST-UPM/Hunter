@@ -1,15 +1,15 @@
 services:
-  # hunter:
-  #   image:
-  #     ghcr.io/strast-upm/hunter
-  #   container_name: hunter
-  #   environment:
-  #     IPINFO_CACHE_HOST: ipinfo_cache
-  #     DATABASE_HOST: postgres
-  #   ports:
-  #     - "8000:8000"
-  #   networks:
-  #     - main_network
+  hunter:
+    image:
+      ghcr.io/strast-upm/hunter
+    container_name: hunter
+    environment:
+      IPINFO_CACHE_HOST: ipinfo_cache
+      DATABASE_HOST: postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - main_network
 
   ipinfo_cache:
     image: ghcr.io/strast-upm/ipinfo_cache

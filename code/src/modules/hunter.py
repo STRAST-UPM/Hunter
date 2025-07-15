@@ -77,21 +77,16 @@ class Hunter:
         # Compute the measurements with Hunter algorithm
         track_results: list[TrackResultModel] = []
         for measurement in self._track.measurements:
-            print(measurement.type)
-            print(len(measurement.results))
             if measurement.type != DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
                 continue
             for traceroute in measurement.results:
                 # TODO correct warning
                 partial_track_results = self._compute_traceroute_result(traceroute)
-                print(f"Tamaño resultados parciales: {len(partial_track_results)}")
                 if partial_track_results is not None:
                     track_results.extend(partial_track_results)
 
         # Save all track results
         for track_result in track_results:
-            print("Guardando track_result")
-            print(track_result)
             self._tracks_provider.save_track_result(
                 track_result=track_result,
                 track_id=self._track.id,
@@ -181,12 +176,12 @@ class Hunter:
     def _compute_traceroute_result(self, traceroute: TracerouteModel) -> list[TrackResultModel]:
         if not self._is_target_hop_valid(traceroute):
             print("Log from: Hunter._compute_traceroute_result")
-            print("Target hop is not valid")
+            print(f"Target hop is not valid in track {self._track.id}")
             return []
 
         if not self._is_last_hop_valid(traceroute):
             print("Log from: Hunter._compute_traceroute_result")
-            print("Last hop is not valid")
+            print(f"Last hop is not valid in track {self._track.id}")
             return []
 
         try:
@@ -205,9 +200,9 @@ class Hunter:
             for hop_response in last_hop_responses
             if hop_response.ip_address != "*"
         ])
-        print("Log from: Hunter._compute_traceroute_result")
-        print(f"IPs in last hop: {last_hop_ips}")
 
+        # print("Log from: Hunter._compute_traceroute_result")
+        # print(f"IPs in last hop: {last_hop_ips}")
 
         track_results = []
 
