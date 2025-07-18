@@ -243,7 +243,7 @@ class RIPEAtlasProvider:
                 )
 
                 logger.debug("Log from: RIPEAtlasProvider.get_measurement_results")
-                logger.debug(f"Measurments length {len(measurement_results_response)}")
+                logger.debug(f"Measurements length {len(measurement_results_response)}")
 
             match measurement_type:
                 case DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
