@@ -4,6 +4,8 @@ import asyncio
 import requests
 import json
 
+from numpy.ma.core import maximum
+
 # internal imports
 from ..data_models.hunter_models.ip_address_model import IpAddressModel
 from ..data_models.hunter_models.measurement_model import MeasurementModel
@@ -24,6 +26,8 @@ from ..utilities.enums import (
 )
 from ..utilities.constants import (
     RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS,
+    RIPE_ATLAS_MAXIMUM_TIME_TO_WAIT_RESULTS_SECONDS,
+    RIPE_ATLAS_PERCENTAGE_ENOUGH_RESULTS,
     RIPE_ATLAS_MEASUREMENTS_URL,
     RIPE_ATLAS_MEASUREMENTS_RESULTS_URL,
     RIPE_ATLAS_PROBES_URL
@@ -216,13 +220,19 @@ class RIPEAtlasProvider:
 
             enough_measurements = False
             measurement_not_ongoing = False
+            time_waited = 0
 
-            while (not enough_measurements) or (not measurement_not_ongoing):
+            while ((not enough_measurements)
+                   or (not measurement_not_ongoing)
+                   or (time_waited < RIPE_ATLAS_MAXIMUM_TIME_TO_WAIT_RESULTS_SECONDS)):
+
                 logger.debug(
                     f"Waiting {RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS}"
                     f" seconds for proper results of measurement {measurement_id}"
                 )
+
                 await asyncio.sleep(RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS)
+                time_waited+=RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS
 
                 measurement_results_response = requests.get(
                     url=RIPE_ATLAS_MEASUREMENTS_RESULTS_URL.format(
@@ -235,7 +245,7 @@ class RIPEAtlasProvider:
 
                 enough_measurements = (
                         len(measurement_results_response) >=
-                        self.get_measurement_expected_number_result(measurement_id))
+                        self.get_measurement_expected_number_result(measurement_id)*RIPE_ATLAS_PERCENTAGE_ENOUGH_RESULTS)
                 measurement_not_ongoing = (
                     (self.get_measurement_status(measurement_id) != MeasurementStatusRIPE.SPECIFIED) or
                     (self.get_measurement_status(measurement_id) != MeasurementStatusRIPE.SCHEDULED) or
