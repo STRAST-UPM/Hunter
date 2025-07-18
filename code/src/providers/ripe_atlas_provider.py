@@ -1,13 +1,9 @@
 # external imports
-from time import sleep
 import asyncio
 import requests
 import json
 
-from numpy.ma.core import maximum
-
 # internal imports
-from ..data_models.hunter_models.ip_address_model import IpAddressModel
 from ..data_models.hunter_models.measurement_model import MeasurementModel
 from ..data_models.hunter_models.base_measurement_result_model import BaseMeasurementResultModel
 from ..data_models.hunter_models.traceroute_model import TracerouteModel
