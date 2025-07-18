@@ -68,8 +68,7 @@ class Hunter:
         self._update_track_with_all_data()
 
         logger.debug("Log from: Hunter.track_ip")
-        logger.debug("Track with all relationships")
-        logger.debug(self._track)
+        logger.debug("Track with all relationships updated")
 
         if not self._track.slim:
             # TODO make ping phase
@@ -141,7 +140,7 @@ class Hunter:
             )
 
             logger.debug("Log from: Hunter._get_traceroute_measurement_results")
-            logger.debug(traceroute_results)
+            logger.debug(f"Number of traceroute results: {len(traceroute_results)}")
 
             return traceroute_results
 

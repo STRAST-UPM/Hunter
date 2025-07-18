@@ -139,7 +139,6 @@ class RIPEAtlasProvider:
             ).json()
 
             logger.debug("Log from: RIPEAtlasProvider.get_measurement_status")
-            logger.debug(json.dumps(measurement_description_response, indent=4))
             logger.debug(
                 MeasurementStatusRIPE(
                     measurement_description_response["results"][0]["status"]["id"]
@@ -168,12 +167,7 @@ class RIPEAtlasProvider:
             ).json()
 
             logger.debug("Log from: RIPEAtlasProvider.get_measurement_expected_number_result")
-            logger.debug(json.dumps(measurement_description_response, indent=4))
-            logger.debug(
-                MeasurementStatusRIPE(
-                    measurement_description_response["results"][0]["probes_scheduled"]
-                )
-            )
+            logger.debug(f"Probes scheduled: {measurement_description_response["results"][0]["probes_scheduled"]}")
 
             return measurement_description_response["results"][0]["probes_scheduled"]
 
@@ -194,15 +188,14 @@ class RIPEAtlasProvider:
                 }
             )
 
-            logger.debug("Log from: RIPEAtlasProvider.get_measurement_type")
-            logger.debug(f"Measurement type request status code: {measurement_description_response.status_code}")
-
-            logger.debug("Log from: RIPEAtlasProvider.get_measurement_type")
-            logger.debug(json.dumps(measurement_description_response.json(), indent=4))
-
-            return DefinitionTypeRIPEMeasurementRequest(
+            measurement_type = DefinitionTypeRIPEMeasurementRequest(
                 measurement_description_response.json()["results"][0]["type"]
             )
+
+            logger.debug("Log from: RIPEAtlasProvider.get_measurement_type")
+            logger.debug(f"Measurement type: {measurement_type}")
+
+            return measurement_type
 
         except Exception as error:
             logger.error("Exception log from: RIPEAtlasProvider.get_measurement_type")
