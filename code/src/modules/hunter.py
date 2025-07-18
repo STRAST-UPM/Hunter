@@ -16,6 +16,7 @@ from ..providers.tracks_provider import TracksProvider
 from ..providers.measurements_provider import MeasurementsProvider
 from ..providers.ip_information_provider import IPInformationProvider
 
+from ..utilities.logger import logger
 from ..utilities.enums import (
     ProbeObjectTypeRIPEMeasurementRequest,
     DefinitionTypeRIPEMeasurementRequest
@@ -65,10 +66,10 @@ class Hunter:
         )
 
         self._update_track_with_all_data()
-        # LOG: track model has all the values
-        # print("Log from Hunter.track_ip")
-        # print("Track with all relationships")
-        # print(self._track)
+
+        logger.debug("Log from: Hunter.track_ip")
+        logger.debug("Track with all relationships")
+        logger.debug(self._track)
 
         if not self._track.slim:
             # TODO make ping phase
@@ -80,7 +81,7 @@ class Hunter:
             if measurement.type != DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
                 continue
             for traceroute in measurement.results:
-                # TODO correct warning
+                # TODO resolve warning
                 partial_track_results = self._compute_traceroute_result(traceroute)
                 if partial_track_results is not None:
                     track_results.extend(partial_track_results)
@@ -139,9 +140,8 @@ class Hunter:
                 measurement_type=DefinitionTypeRIPEMeasurementRequest.TRACEROUTE
             )
 
-            # LOG: data retrieved
-            # print("Log from: Hunter._get_traceroute_measurement_results")
-            # print(traceroute_results)
+            logger.debug("Log from: Hunter._get_traceroute_measurement_results")
+            logger.debug(traceroute_results)
 
             return traceroute_results
 
@@ -156,9 +156,8 @@ class Hunter:
                 measurement_id=measurement_id
             )
 
-        # LOG: save traceroute measurement results
-        # print("Log from: Hunter._save_traceroute_results")
-        # print("Traceroute results saved in DB")
+        logger.debug("Log from: Hunter._save_traceroute_results")
+        logger.debug("Traceroute results saved in DB")
 
     def _update_track_with_all_data(self):
         self._track = self._tracks_provider.get_track_with_relations(
@@ -175,20 +174,20 @@ class Hunter:
 
     def _compute_traceroute_result(self, traceroute: TracerouteModel) -> list[TrackResultModel]:
         if not self._is_target_hop_valid(traceroute):
-            print("Log from: Hunter._compute_traceroute_result")
-            print(f"Target hop is not valid in track {self._track.id}")
+            logger.debug("Log from: Hunter._compute_traceroute_result")
+            logger.debug(f"Target hop is not valid in track {self._track.id}")
             return []
 
         if not self._is_last_hop_valid(traceroute):
-            print("Log from: Hunter._compute_traceroute_result")
-            print(f"Last hop is not valid in track {self._track.id}")
+            logger.debug("Log from: Hunter._compute_traceroute_result")
+            logger.debug(f"Last hop is not valid in track {self._track.id}")
             return []
 
         try:
             last_hop_responses = traceroute.hops[-2].hop_responses
         except IndexError as e:
-            print("Error log from: Hunter._compute_traceroute_result")
-            print(e)
+            logger.debug("Exception log from: Hunter._compute_traceroute_result")
+            logger.debug(e)
             return []
 
         probe_country_code, probe_latitude, probe_longitude = (
@@ -201,8 +200,8 @@ class Hunter:
             if hop_response.ip_address != "*"
         ])
 
-        # print("Log from: Hunter._compute_traceroute_result")
-        # print(f"IPs in last hop: {last_hop_ips}")
+        logger.debug("Log from: Hunter._compute_traceroute_result")
+        logger.debug(f"IPs in last hop: {last_hop_ips}")
 
         track_results = []
 
@@ -232,8 +231,8 @@ class Hunter:
         try:
             target_hop_responses = traceroute_result.hops[-1].hop_responses
         except IndexError as e:
-            print("Error log from: Hunter._compute_traceroute_result")
-            print(e)
+            logger.error("Exception log from: Hunter._compute_traceroute_result")
+            logger.error(e)
             return False
 
         target_hop_ips = set([
@@ -252,8 +251,8 @@ class Hunter:
         try:
             last_hop_responses = traceroute_result.hops[-1].hop_responses
         except IndexError as e:
-            print("Error log from: Hunter._compute_traceroute_result")
-            print(e)
+            logger.error("Exception log from: Hunter._compute_traceroute_result")
+            logger.error(e)
             return False
 
         last_hop_ips = set([

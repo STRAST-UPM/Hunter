@@ -31,6 +31,11 @@ sudo docker run \
 sudo docker compose up -d
 ```
 
+### Web browser interfaces
+
+- [Hunter Swagger](http://127.0.0.1:8000/docs)
+- [Postgres admin console](http://localhost:8080)
+
 ## Notes
 ```sql
 SELECT table_name 
@@ -56,11 +61,6 @@ DROP TABLE IF EXISTS airports CASCADE;
 DROP TABLE IF EXISTS traceroutes_hops CASCADE;
 DROP TABLE IF EXISTS hops_responses CASCADE;
 ```
-
-### Web browser interfaces
-
-- [Hunter Swagger](http://127.0.0.1:8000/docs)
-- [Postgres admin console](http://localhost:8080)
 
 ## Related publications
 

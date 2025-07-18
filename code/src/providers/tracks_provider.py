@@ -17,6 +17,8 @@ from ..data_models.database_models import (
     TracerouteDBModel,
     TracerouteHopDBModel,
 )
+
+from ..utilities.logger import logger
 from ..utilities.enums import (
     TrackStatus, DefinitionTypeRIPEMeasurementRequest
 )
@@ -143,7 +145,9 @@ class TracksProvider(DatabaseProvider):
 
                 return None
         except Exception as e:
-            print(f"Error getting track with relations for ID {track_id}: {e}")
+            logger.error("Exception log from: TracksProvider.get_track_with_relations")
+            logger.error(f"Error getting track relations for ID {track_id}: {e}")
+            logger.error(e)
             return None
 
     def parsing_traceroute_with_all_relations(self, traceroute_db_model: TracerouteDBModel) -> TracerouteModel:

@@ -15,6 +15,8 @@ from ..data_models.hunter_models.hop_response_model import HopResponseModel
 from ..data_models.ripe_models.base_definition_ripe_measurement_request_model import BaseDefinitionRIPEMeasurementRequestModel
 from ..data_models.ripe_models.probe_object_ripe_measurement_request_model import ProbeObjectRipeMeasurementRequestModel
 from ..data_models.ripe_models.ripe_measurement_response_model import RipeMeasurementResponseModel
+
+from ..utilities.logger import logger
 from ..utilities.enums import (
     AddressFamilyRIPEMeasurementRequest,
     DefinitionTypeRIPEMeasurementRequest,
@@ -37,10 +39,9 @@ class RIPEAtlasProvider:
             probes: list[ProbeObjectRipeMeasurementRequestModel],
     ) -> RipeMeasurementResponseModel:
         try:
-            # LOG: measurement parameters
-            # print(f"Log of parameters from: RIPEAtlasProvider.start_new_measurement")
-            # print(definitions)
-            # print(probes)
+            logger.debug("Log from: RIPEAtlasProvider.start_new_measurement")
+            logger.debug(f"Measurement definition: {definitions}")
+            logger.debug(f"Measurement probes: {probes}")
 
             start_measurement_response = requests.post(
                 url=RIPE_ATLAS_MEASUREMENTS_URL,
@@ -55,30 +56,28 @@ class RIPEAtlasProvider:
                 },
             )
 
-            # LOG: response
-            # print("Log response from: RIPEAtlasProvider.start_new_measurement")
-            # print(json.dumps(start_measurement_response.json(), indent=4))
+            logger.debug("Log from: RIPEAtlasProvider.start_new_measurement")
+            logger.debug(json.dumps(start_measurement_response.json(), indent=4))
 
             if start_measurement_response.ok:
                 measurement_response = RipeMeasurementResponseModel(
                     **start_measurement_response.json())
             else:
-                # LOG: error response
-                print("Log from: RIPEAtlasProvider.start_new_measurement")
-                print("Measurement error")
-                print(start_measurement_response.json())
+                logger.warning("Log from: RIPEAtlasProvider.start_new_measurement")
+                logger.warning(start_measurement_response.json())
+
                 errors_descriptions = [
                     error["detail"]
                     for error in start_measurement_response.json()["error"]["errors"]
                 ]
+
                 measurement_response = RipeMeasurementResponseModel(
                     error=True,
                     error_description=errors_descriptions.__str__()
                 )
         except Exception as error:
-            # LOG: general exception
-            print("Exception log from: RIPEAtlasProvider.start_new_measurement")
-            print(error)
+            logger.error("Exception log from: RIPEAtlasProvider.start_new_measurement")
+            logger.error(error)
             measurement_response = RipeMeasurementResponseModel(
                 error=True,
                 error_description="Error parsing the message"
@@ -99,9 +98,8 @@ class RIPEAtlasProvider:
                 }
             ).json()
 
-            # LOG: response
-            # print("Log from: RIPEAtlasProvider.get_measurement_description")
-            # print(json.dumps(measurement_description_response, indent=4))
+            logger.debug("Log from: RIPEAtlasProvider.get_measurement_description")
+            logger.debug(json.dumps(measurement_description_response, indent=4))
 
             measurement_description_result = measurement_description_response["results"][0]
 
@@ -123,8 +121,9 @@ class RIPEAtlasProvider:
             )
 
             return measurement
-        except requests.HTTPError as error:
-            print(error)
+        except Exception as error:
+            logger.error("Exception log from: RIPEAtlasProvider.get_measurement_description")
+            logger.error(error)
             return None
 
     def get_measurement_status(self, measurement_id: int) -> MeasurementStatusRIPE:
@@ -139,21 +138,21 @@ class RIPEAtlasProvider:
                 }
             ).json()
 
-            # LOG: response
-            # print("Log from: RIPEAtlasProvider.get_measurement_status")
-            # print(json.dumps(measurement_description_response, indent=4))
-            # print(
-            #     MeasurementStatusRIPE(
-            #         measurement_description_response["results"][0]["status"]["id"]
-            #     )
-            # )
+            logger.debug("Log from: RIPEAtlasProvider.get_measurement_status")
+            logger.debug(json.dumps(measurement_description_response, indent=4))
+            logger.debug(
+                MeasurementStatusRIPE(
+                    measurement_description_response["results"][0]["status"]["id"]
+                )
+            )
 
             return MeasurementStatusRIPE(
                 measurement_description_response["results"][0]["status"]["id"]
             )
 
         except requests.HTTPError as error:
-            print(error)
+            logger.error("Exception log from: RIPEAtlasProvider.get_measurement_status")
+            logger.error(error)
             return MeasurementStatusRIPE.FAILED
 
     def get_measurement_expected_number_result(self, measurement_id: int) -> int:
@@ -168,19 +167,19 @@ class RIPEAtlasProvider:
                 }
             ).json()
 
-            # LOG: response
-            # print("Log from: RIPEAtlasProvider.get_measurement_expected_number_result")
-            # print(json.dumps(measurement_description_response, indent=4))
-            # print(
-            #     MeasurementStatusRIPE(
-            #         measurement_description_response["results"][0]["probes_scheduled"]
-            #     )
-            # )
+            logger.debug("Log from: RIPEAtlasProvider.get_measurement_expected_number_result")
+            logger.debug(json.dumps(measurement_description_response, indent=4))
+            logger.debug(
+                MeasurementStatusRIPE(
+                    measurement_description_response["results"][0]["probes_scheduled"]
+                )
+            )
 
             return measurement_description_response["results"][0]["probes_scheduled"]
 
         except requests.HTTPError as error:
-            print(error)
+            logger.error("Exception log from: RIPEAtlasProvider.get_measurement_expected_number_result")
+            logger(error)
             return 0
 
     def get_measurement_type(self, measurement_id: int) -> [DefinitionTypeRIPEMeasurementRequest, None]:
@@ -193,23 +192,21 @@ class RIPEAtlasProvider:
                 params={
                     "id": measurement_id,
                 }
-            ).json()
+            )
 
-            # LOG: response
-            # print("Log from: RIPEAtlasProvider.get_measurement_type")
-            # print(json.dumps(measurement_description_response, indent=4))
-            # print(
-            #     MeasurementStatusRIPE(
-            #         measurement_description_response["results"][0]["probes_scheduled"]
-            #     )
-            # )
+            logger.debug("Log from: RIPEAtlasProvider.get_measurement_type")
+            logger.debug(f"Measurement type request status code: {measurement_description_response.status_code}")
+
+            logger.debug("Log from: RIPEAtlasProvider.get_measurement_type")
+            logger.debug(json.dumps(measurement_description_response.json(), indent=4))
 
             return DefinitionTypeRIPEMeasurementRequest(
-                measurement_description_response["results"][0]["type"]
+                measurement_description_response.json()["results"][0]["type"]
             )
 
         except Exception as error:
-            print(error)
+            logger.error("Exception log from: RIPEAtlasProvider.get_measurement_type")
+            logger.error(error)
             return None
 
     async def get_measurement_results(
@@ -228,8 +225,10 @@ class RIPEAtlasProvider:
             measurement_not_ongoing = False
 
             while (not enough_measurements) or (not measurement_not_ongoing):
-                print(f"Waiting {RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS} "
-                      f"seconds for proper results of measurement {measurement_id}")
+                logger.debug(
+                    f"Waiting {RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS}"
+                    f" seconds for proper results of measurement {measurement_id}"
+                )
                 await asyncio.sleep(RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS)
 
                 measurement_results_response = requests.get(
@@ -250,10 +249,8 @@ class RIPEAtlasProvider:
                     (self.get_measurement_status(measurement_id) != MeasurementStatusRIPE.ONGOING)
                 )
 
-                # LOG: response
-                # print("Log from: RIPEAtlasProvider.get_measurement_results")
-                # print("Response log of get_measurements_results")
-                # print(json.dumps(measurement_results_response, indent=4))
+                logger.debug("Log from: RIPEAtlasProvider.get_measurement_results")
+                logger.debug(f"Measurments length {len(measurement_results_response)}")
 
             match measurement_type:
                 case DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:
@@ -264,24 +261,20 @@ class RIPEAtlasProvider:
                     return []
 
         except requests.HTTPError as error:
-            print("Error log from: RIPEAtlasProvider.get_measurement_results")
-            print(measurement_results_response)
-            print(error)
+            logger.error("Exception log from: RIPEAtlasProvider.get_measurement_results")
+            logger.error(measurement_results_response)
+            logger.error(error)
             return []
 
     def parse_measurement_traceroute_result(self, measurement_results: list[dict]) -> [TracerouteModel]:
         traceroute_results = []
 
-        # LOG: results retrieved
-        # print("Log from: RIPEAtlasProvider.parse_measurement_traceroute_result")
-        # print(f"Number of results: {len(measurement_results)}")
-        # print(json.dumps(measurement_results, indent=4))
+        logger.debug("Log from: RIPEAtlasProvider.parse_measurement_traceroute_result")
+        logger.debug(f"Number of results: {len(measurement_results)}")
 
         if len(measurement_results) == 0:
             return traceroute_results
 
-        # Here we put id of the traceroute results as 0, but the db has a Serial
-        # should be updated
         for traceroute_result in measurement_results:
             traceroute_results.append(
                 TracerouteModel(
@@ -306,7 +299,6 @@ class RIPEAtlasProvider:
 
     def get_probe_location_info(self, probe_id: int) -> (str, float, float):
         """
-
         :param probe_id: id of the probe we want the info
         :return: (country_code, latitude, longitude)
         """
@@ -325,6 +317,7 @@ class RIPEAtlasProvider:
             longitude = probe_info["geometry"]["coordinates"][0]
 
         except Exception as e:
-            pass
+            logger.error("Exception log from: RIPEAtlasProvider.get_probe_location_info")
+            logger.error(e)
 
         return country_code, latitude, longitude

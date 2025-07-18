@@ -6,6 +6,7 @@ import ipinfo
 from os import getenv
 
 # internal imports
+from ..utilities.logger import logger
 from ..utilities.constants import (
     IPINFO_CACHE_IP_INFO
 )
@@ -30,8 +31,8 @@ class IPInformationProvider:
         )
 
         if ip_location is None:
-            print("Log from: IPInformationProvider.locate_unicast_ip")
-            print("Private IPInfo request needed")
+            logger.debug("Log from: IPInformationProvider.locate_unicast_ip")
+            logger.debug("Private IPInfo request needed")
             ip_location = self.locate_unicast_with_ipinfo(
                 ip_address=ip_address,
             )
@@ -58,8 +59,8 @@ class IPInformationProvider:
 
             return details.country, details.city, details.latitude, details.longitude
         except Exception as e:
-            print("Exception from IPInformationProvider.locate_unicast_with_ipinfo")
-            print(e)
+            logger.error("Exception log from: IPInformationProvider.locate_unicast_with_ipinfo")
+            logger.error(e)
             return None
 
     def locate_unicast_with_cached_ipinfo(self, ip_address: str) -> [(str, str, float, float), None]:
@@ -81,8 +82,8 @@ class IPInformationProvider:
 
             return ip_address_details["country"], ip_address_details["city"], ip_address_details["latitude"], ip_address_details["longitude"]
         except Exception as e:
-            print("Exception from IPInformationProvider.locate_unicast_with_cached_ipinfo")
-            print(e)
+            logger("Exception log from: IPInformationProvider.locate_unicast_with_cached_ipinfo")
+            logger(e)
             return None
 
     def is_anycast_service_check(self, ip_address: str) -> bool:

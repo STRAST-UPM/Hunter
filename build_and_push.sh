@@ -12,7 +12,7 @@ image_repository="ghcr.io"
 sudo docker image rm -f "$image_name":"$tag"
 sudo docker image rm -f "$image_repository/$image_name:$tag"
 
-sudo docker build --no-cache -t "$image_name":"$tag" "$script_parent_folder"
+sudo docker build -t "$image_name":"$tag" "$script_parent_folder"
 
 sudo docker tag "$image_name" "$image_repository/$image_name:$tag"
 sudo docker push "$image_repository/$image_name:$tag"

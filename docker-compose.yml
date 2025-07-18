@@ -6,10 +6,16 @@ services:
     environment:
       IPINFO_CACHE_HOST: ipinfo_cache
       DATABASE_HOST: postgres
+      LOG_LEVEL: ${HUNTER_LOG_LEVEL}
     ports:
       - "8000:8000"
     networks:
       - main_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ipinfo_cache:
+        condition: service_started
 
   ipinfo_cache:
     image: ghcr.io/strast-upm/ipinfo_cache
@@ -17,7 +23,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      IPINFO_TOKEN: ${IPINFO_TOKEN}
+      IPINFO_TOKEN: ${IPINFO_CACHE_IPINFO_TOKEN}
     volumes:
       - ipinfo_cache_data:/db
     networks:
@@ -37,6 +43,9 @@ services:
     networks:
       - main_network
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: postgres:latest
@@ -47,14 +56,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_hunter_data:/var/lib/postgresql/data
     networks:
       - main_network
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
 volumes:
   postgres_admin_volume:
-  postgres_data:
+  postgres_hunter_data:
   ipinfo_cache_data:
 
 networks:
