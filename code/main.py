@@ -1,13 +1,13 @@
 # external imports
+import uvicorn
 from fastapi import FastAPI
 
 # internal imports
-## Routers imports
 from src.routers import *
-## Database imports
 from src.providers.database_provider import DatabaseProvider
-# Necesario para cargar los modelos y crear las tablas
 from src.data_models.database_models import *
+from src.utilities.constants import HUNTER_PORT
+
 
 db_provider = DatabaseProvider()
 db_provider.create_all()

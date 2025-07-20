@@ -82,8 +82,8 @@ class IPInformationProvider:
 
             return ip_address_details["country"], ip_address_details["city"], ip_address_details["latitude"], ip_address_details["longitude"]
         except Exception as e:
-            logger("Exception log from: IPInformationProvider.locate_unicast_with_cached_ipinfo")
-            logger(e)
+            logger.error("Exception log from: IPInformationProvider.locate_unicast_with_cached_ipinfo")
+            logger.error(e)
             return None
 
     def is_anycast_service_check(self, ip_address: str) -> bool:

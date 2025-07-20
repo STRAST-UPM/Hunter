@@ -173,7 +173,7 @@ class RIPEAtlasProvider:
 
         except requests.HTTPError as error:
             logger.error("Exception log from: RIPEAtlasProvider.get_measurement_expected_number_result")
-            logger(error)
+            logger.error(error)
             return 0
 
     def get_measurement_type(self, measurement_id: int) -> [DefinitionTypeRIPEMeasurementRequest, None]:

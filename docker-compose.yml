@@ -7,8 +7,9 @@ services:
       IPINFO_CACHE_HOST: ipinfo_cache
       DATABASE_HOST: postgres
       LOG_LEVEL: ${HUNTER_LOG_LEVEL}
+      HUNTER_PORT: ${HUNTER_PORT}
     ports:
-      - "8000:8000"
+      - ${HUNTER_PORT}":"${HUNTER_PORT}
     networks:
       - main_network
     depends_on:
