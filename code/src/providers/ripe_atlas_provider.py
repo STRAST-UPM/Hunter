@@ -218,10 +218,11 @@ class RIPEAtlasProvider:
             measurement_not_ongoing = False
             time_waited = 0
 
-            while ((not enough_measurements)
-                   or (not measurement_not_ongoing)
-                   or (time_waited < RIPE_ATLAS_MAXIMUM_TIME_TO_WAIT_RESULTS_SECONDS)):
+            while not (enough_measurements
+                   or measurement_not_ongoing
+                   or (time_waited >= RIPE_ATLAS_MAXIMUM_TIME_TO_WAIT_RESULTS_SECONDS)):
 
+                logger.debug(f"Time already waited: {time_waited}")
                 logger.debug(
                     f"Waiting {RIPE_ATLAS_TIME_BETWEEN_RESULTS_REQUESTS_SECONDS}"
                     f" seconds for proper results of measurement {measurement_id}"
@@ -242,14 +243,18 @@ class RIPEAtlasProvider:
                 enough_measurements = (
                         len(measurement_results_response) >=
                         self.get_measurement_expected_number_result(measurement_id)*RIPE_ATLAS_PERCENTAGE_ENOUGH_RESULTS)
-                measurement_not_ongoing = (
-                    (self.get_measurement_status(measurement_id) != MeasurementStatusRIPE.SPECIFIED) or
-                    (self.get_measurement_status(measurement_id) != MeasurementStatusRIPE.SCHEDULED) or
-                    (self.get_measurement_status(measurement_id) != MeasurementStatusRIPE.ONGOING)
-                )
-
                 logger.debug("Log from: RIPEAtlasProvider.get_measurement_results")
                 logger.debug(f"Measurements length {len(measurement_results_response)}")
+                logger.debug(f"Enough measurements: {enough_measurements}")
+
+
+                measurement_status = self.get_measurement_status(measurement_id)
+                logger.debug(f"Measurement status: {measurement_status}")
+                measurement_not_ongoing = (
+                    ( measurement_status != MeasurementStatusRIPE.SPECIFIED) or
+                    ( measurement_status != MeasurementStatusRIPE.SCHEDULED) or
+                    ( measurement_status != MeasurementStatusRIPE.ONGOING)
+                )
 
             match measurement_type:
                 case DefinitionTypeRIPEMeasurementRequest.TRACEROUTE:

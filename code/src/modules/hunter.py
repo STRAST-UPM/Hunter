@@ -85,6 +85,9 @@ class Hunter:
                 if partial_track_results is not None:
                     track_results.extend(partial_track_results)
 
+        logger.debug("Log from: Hunter.track_ip")
+        logger.debug(f"Number of results to save {len(track_results)}")
+
         # Save all track results
         for track_result in track_results:
             self._tracks_provider.save_track_result(
@@ -92,8 +95,12 @@ class Hunter:
                 track_id=self._track.id,
             )
 
+        logger.info("Track results saved")
+
         # Mark as finished the hunt
         self._tracks_provider.mark_track_as_finished(track_id=self._track.id)
+
+        logger.info(f"Track {self._track.id} finished")
 
     def _start_traceroute_measurement(self) -> RipeMeasurementResponseModel:
         traceroute_definition = TracerouteDefinitionRIPEMeasurementRequestModel(

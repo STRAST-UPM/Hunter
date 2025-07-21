@@ -9,7 +9,7 @@ services:
       LOG_LEVEL: ${HUNTER_LOG_LEVEL}
       HUNTER_PORT: ${HUNTER_PORT}
     ports:
-      - ${HUNTER_PORT}":"${HUNTER_PORT}
+      - ${HUNTER_PORT}:${HUNTER_PORT}
     networks:
       - main_network
     depends_on:
