@@ -203,7 +203,7 @@ class Hunter:
         last_hop_ips = set([
             hop_response.ip_address
             for hop_response in last_hop_responses
-            if hop_response.ip_address != "*"
+            if (hop_response.ip_address != "*") and (not self._ip_information_provider.is_bogon(hop_response.ip_address))
         ])
 
         logger.debug("Log from: Hunter._compute_traceroute_result")
@@ -244,7 +244,7 @@ class Hunter:
         target_hop_ips = set([
             hop_response.ip_address
             for hop_response in target_hop_responses
-            if hop_response.ip_address != "*"
+            if (hop_response.ip_address != "*") and (not self._ip_information_provider.is_bogon(hop_response.ip_address))
         ])
 
         # Check if target hop ips are all the same
@@ -264,7 +264,7 @@ class Hunter:
         last_hop_ips = set([
             hop_response.ip_address
             for hop_response in last_hop_responses
-            if hop_response.ip_address != "*"
+            if (hop_response.ip_address != "*") and (not self._ip_information_provider.is_bogon(hop_response.ip_address))
         ])
 
         # Check if there are some clear IPs in last hop
