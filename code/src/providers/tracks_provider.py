@@ -61,12 +61,22 @@ class TracksProvider(DatabaseProvider):
 
     def mark_track_with_error(self, track_id: int, error_msg: str = TRACK_STATUS_ERROR_DESCRIPTION):
         track_db = self.get_by_id(model_class=TrackDBModel, obj_id=track_id)
+
+        if track_db is None:
+            logger.warning(f"Track with ID {track_id} not found for error marking")
+            return False
+
         track_db.status = TrackStatus.ERROR.value
         track_db.status_description = error_msg
         self.update(track_db)
 
     def mark_track_as_finished(self, track_id: int):
         track_db = self.get_by_id(model_class=TrackDBModel, obj_id=track_id)
+
+        if track_db is None:
+            logger.warning(f"Track with ID {track_id} not found for finish marking")
+            return False
+
         track_db.status = TrackStatus.FINISHED.value
         track_db.status_description = TRACK_STATUS_FINISHED_DESCRIPTION
         self.update(track_db)

@@ -98,9 +98,10 @@ class Hunter:
         logger.info("Track results saved")
 
         # Mark as finished the hunt
-        self._tracks_provider.mark_track_as_finished(track_id=self._track.id)
-
-        logger.info(f"Track {self._track.id} finished")
+        if self._tracks_provider.mark_track_as_finished(track_id=self._track.id):
+            logger.info(f"Track {self._track.id} finished")
+        else:
+            logger.warning(f"Track {self._track.id} fail")
 
     def _start_traceroute_measurement(self) -> RipeMeasurementResponseModel:
         traceroute_definition = TracerouteDefinitionRIPEMeasurementRequestModel(

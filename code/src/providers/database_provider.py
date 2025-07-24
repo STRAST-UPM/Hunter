@@ -94,7 +94,8 @@ class DatabaseProvider:
         try:
             with self.get_session() as session:
                 obj = session.query(model_class).get(obj_id)
-                session.expunge(obj)
+                if obj is not None:
+                    session.expunge(obj)
                 return obj
         except SQLAlchemyError as e:
             logger.error(f"Error getting object by ID {obj_id}: {e}")
