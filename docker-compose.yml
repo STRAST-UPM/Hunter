@@ -1,7 +1,7 @@
 services:
   hunter:
     image:
-      ghcr.io/strast-upm/hunter:${HUNTER_TAG}
+      ghcr.io/strast-upm/hunter:${HUNTER_IMAGE_TAG}
     container_name: hunter
     environment:
       IPINFO_CACHE_HOST: ipinfo_cache
