@@ -36,6 +36,12 @@ sudo docker compose up -d
 - [Hunter Swagger](http://127.0.0.1:8000/docs)
 - [Postgres admin console](http://localhost:8080)
 
+## Build image
+
+```shell
+./build_and_push.sh latest
+```
+
 ## Notes
 ```sql
 SELECT table_name 
